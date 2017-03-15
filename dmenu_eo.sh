@@ -13,7 +13,7 @@ fi
 
 # If ESPDIC is installed
 if [ ! -r $cache ]; then
-	wget -O "$cache" $espdic_dl >> /dev/null
+	wget -o /dev/null -O "$cache" $espdic_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		echo "Wget of espdic failed" 1>&2
 		exit 1
