@@ -5,11 +5,11 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 else
 	# Add to /bin/
-	cp dmenu_eo.sh /bin/dmenu_eo
+	cp dmenu_eo.sh /usr/local/bin/dmenu_eo
 
 	# Set permissions
-	chmod 755 "/bin/dmenu_eo"
+	chmod 755 "/usr/local/bin/dmenu_eo"
 
 	# Change owner
-	chown root "/bin/dmenu_eo"
+	chown root "/usr/local/bin/dmenu_eo"
 fi
