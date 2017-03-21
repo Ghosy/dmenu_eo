@@ -2,7 +2,7 @@
 A utility that offers an easy way to quickly browse definitions in the ESPDIC.
 
 Demo:
-![dmenu_eo demo](https://i.imgur.com/koaVI0k.gif "Dmenu_EO")
+![dmenu_eo demo](https://i.imgur.com/koaVI0k.gif)
 
 ## Installing
 
