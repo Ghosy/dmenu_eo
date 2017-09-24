@@ -12,7 +12,7 @@ Demo:
 
 ### Process
 1. Clone or download contents of git repository
-`git clone git@github.com:Ghosy/Dmenu-EO.git`
+`git clone https://github.com/Ghosy/Dmenu-EO.git`
 
 2. Run install.sh as root
 `./install.sh`
