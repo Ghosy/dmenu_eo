@@ -26,6 +26,17 @@ else
 	cache=$HOME/.espdic # if no xdg dir, fall back to dotfile in ~
 fi
 
+# Check for wget
+if ! type wget >>/dev/null; then
+	echo "Wget is not installed. Please install wget."
+	exit 1
+fi
+# Check for dmenu
+if ! type dmenu >>/dev/null; then
+	echo "Dmenu is not installed. Please install dmenu."
+	exit 1
+fi
+
 # If ESPDIC is installed
 if [ ! -r $cache ]; then
 	wget -o /dev/null -O "$cache" $espdic_dl >> /dev/null
