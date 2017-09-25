@@ -27,4 +27,6 @@ else
 
 	# Change owner
 	chown root "/usr/local/bin/dmenu_eo"
+
+	echo "Install success"
 fi
