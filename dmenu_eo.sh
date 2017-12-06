@@ -104,7 +104,7 @@ main() {
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
-		# Getopt not getting correctly arguments
+		# Getopt not getting arguments correctly
 		exit 2
 	fi
 
