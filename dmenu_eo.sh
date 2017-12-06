@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+set -euo pipefail; [[ "$TRACE" ]] && set -x
+
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 
