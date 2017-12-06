@@ -100,7 +100,7 @@ main() {
 
 	# Getopt
 	local short=hrx
-	local long=hsystem,hsistemo,rebuild,rekonstrui,xsystem,xsistemo
+	local long=hsystem,hsistemo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
