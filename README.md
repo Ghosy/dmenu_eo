@@ -11,19 +11,19 @@ Demo:
 * Dmenu
 
 ### Process
-1. Clone or download contents of git repository
+1. Clone or download contents of git repository  
 `git clone https://github.com/Ghosy/Dmenu-EO.git`
 
-2. Navigate to the cloned repository
+2. Navigate to the cloned repository  
 `cd Dmenu-EO`
 
-3. Run install.sh as root
-`./install.sh`
-or
-`bash install.sh`
+3. Run install.sh as root'
+`./install.sh`  
+or  
+`bash install.sh
 
-4. Run Dmenu_EO
-*First launch downloads and prepares a copy of ESPDIC*
+4. Run Dmenu_EO  
+*First launch downloads and prepares a copy of ESPDIC*  
 `dmenu_eo`
 
 
@@ -40,17 +40,17 @@ Demonstro:
 * Dmenu
 
 ### Procedo
-1. Klonu aŭ elŝutu la enhavon de la git deponejo
+1. Klonu aŭ elŝutu la enhavon de la git deponejo  
 `git clone https://github.com/Ghosy/Dmenu-EO.git`
 
-2. Iru al la klona deponejo
+2. Iru al la klona deponejo  
 `cd Dmenu-EO`
 
-3. Lanĉu install.sh kiel ĉefuzanto
-`./install.sh`
-aŭ
+3. Lanĉu install.sh kiel ĉefuzanto  
+`./install.sh`  
+aŭ  
 `bash install.sh`
 
-4. Lanĉu Dmenu_EO
-*La unua lanĉo de Dmenu_EO elŝutos kaj preparos la ESPDIC*
+4. Lanĉu Dmenu_EO  
+*La unua lanĉo de Dmenu_EO elŝutos kaj preparos la ESPDIC*  
 `dmenu_eo`
