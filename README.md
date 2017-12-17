@@ -17,7 +17,7 @@ Demo:
 2. Navigate to the cloned repository  
 `cd Dmenu-EO`
 
-3. Run install.sh as root'
+3. Run install.sh as root'  
 `./install.sh`  
 or  
 `bash install.sh
