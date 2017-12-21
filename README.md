@@ -26,6 +26,9 @@ or
 *First launch downloads and prepares a copy of ESPDIC*  
 `dmenu_eo`
 
+## License
+This project is licensed under the GNU General Public License version 3(GPLv3) - see the [LICENSE.txt](LICENSE.txt) file for details.
+
 
 # Dmenu_EO
 Ilo, kiu donas facilan rapidan metodon por folii la vortareroj de la ESPDIC. Dmenu_eo subtenas ambaŭ la X-sistemon kaj la H-sistemon.
@@ -54,3 +57,6 @@ aŭ
 4. Lanĉu Dmenu_EO  
 *La unua lanĉo de Dmenu_EO elŝutos kaj preparos la ESPDIC*  
 `dmenu_eo`
+
+## Permesilo
+Ĉi tiu projekto estas sub la Ĝenerala Publika Permesilo de GNU versio 3(GPLv3) - Vidu la dosieron de [LICENSE.txt](LICENSE.txt) por detaloj
