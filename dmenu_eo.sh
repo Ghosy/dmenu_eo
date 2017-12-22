@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This program allows the use of dmenu to view information from the ESPDIC
 # Copyright (c) 2017 Zachary Matthews.
