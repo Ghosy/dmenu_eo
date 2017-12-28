@@ -19,6 +19,7 @@ if [[ $EUID -ne 0 ]]; then
 	echo "You must be root to perform this action" 1>&2
 	exit 1
 else
+	printf "Installing dmenu_eo... "
 	# Add to /bin/
 	cp dmenu_eo.sh /usr/local/bin/dmenu_eo
 
@@ -27,6 +28,7 @@ else
 
 	# Change owner
 	chown root "/usr/local/bin/dmenu_eo"
+	printf "Complete\n"
 
 	echo "Install success"
 fi
