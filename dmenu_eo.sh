@@ -17,23 +17,29 @@
 
 set -euo pipefail
 
+alt_dic=false
 x_system=false
 h_system=false
 rebuild=false
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
+oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
 
 # cache from dmenu_path
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
 if [ -d "$cachedir" ]; then
-	cache=$cachedir/espdic
+	espdic_cache=$cachedir/espdic
+	oconnor_hayes_cache=$cachedir/oconnor_hayes
 else
-	cache=$HOME/.espdic # if no xdg dir, fall back to dotfile in ~
+	espdic_cache=$HOME/.espdic # if no xdg dir, fall back to dotfile in ~
+	oconnor_hayes_cache=$HOME/.oconnor_hayes # if no xdg dir, fall back to dotfile in ~
 fi
 
 print_usage() {
 	echo "Usage: dmenu_eo [OPTION]..."
 	echo "Options(Agordoj):"
+	echo "  -a, --alt           use the O'Connor and Hayes dictionary instead of the ESPDIC"
+	echo "      --alia          uzi la vortaro de O'Connor kaj Hayes anstataŭ la ESPDIC"
 	echo "      --help          display this help message"
 	echo "      --helpi         prezenti ĉi tiun mesaĝon de helpo"
 	echo "  -h, --hsystem       add H-system entries to dictionary(during rebuild)"
@@ -56,28 +62,44 @@ print_usage() {
 }
 
 build_dictionary() {
-	wget -o /dev/null -O "$cache" $espdic_dl >> /dev/null
+	# Get ESPDIC
+	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		echo "Wget of espdic failed" 1>&2
+		echo "Wget of ESPDIC failed" 1>&2
+		exit 1
+	fi
+	# Get O'Connor/Hayes
+	wget -o /dev/null -O "$oconnor_hayes_cache" $oconnor_hayes_dl >> /dev/null
+	if [ "$?" -ne 0 ]; then
+		echo "Wget of O'Connor and Hayes dictionary failed" 1>&2
 		exit 1
 	fi
 	# Convert DOS newline to Unix
-	sed -i 's/.$//' $cache
+	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache"
+
+	# Clean O'Connor/Hayes preamble
+	sed -i '/= A =/,$!d' "$oconnor_hayes_cache"
+	# Clean O'Connor/Hayes after dictionary
+	sed -i '/\*/,$d' "$oconnor_hayes_cache"
+	# Clear extra lines
+	sed -i '/^\s*$/d' "$oconnor_hayes_cache"
 
 	if ($x_system); then
 		# Add lines using X-system to dictionary
-		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$cache"
+		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$espdic_cache" "$oconnor_hayes_cache"
+
 	fi
 
 	if ($h_system); then
 		# Add lines using H-system to dictionary
-		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$cache"
+		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$espdic_cache" "$oconnor_hayes_cache"
+
 	fi
 }
 
 rebuild_dictionary() {
 	# Remove old dictionary
-	rm -f "$cache"
+	rm -f "$espdic_cache" "$oconnor_hayes_cache"
 	# Build dictionary
 	build_dictionary
 }
@@ -99,8 +121,8 @@ main() {
 	check_depends
 
 	# Getopt
-	local short=hrx
-	local long=hsystem,hsistemo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
+	local short=ahrx
+	local long=alia,alt,hsystem,hsistemo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -113,6 +135,9 @@ main() {
 	# Deal with command-line arguments
 	while true; do
 		case $1 in
+			-a|--alia|--alt)
+				alt_dic=true
+				;;
 			--help|--helpi)
 				print_usage
 				;;
@@ -141,11 +166,17 @@ main() {
 	if ($rebuild); then
 		rebuild_dictionary
 	# If ESPDIC is not installed
-	elif [ ! -r "$cache" ]; then
+	elif [ ! -r "$espdic_cache" ] && [ ! -r "$oconnor_hayes_cache" ]; then
 		# Assume X-system by default
 		x_system=true
 		build_dictionary
 	else
+		if ! ($alt_dic); then
+			cache=$espdic_cache
+		else
+			cache=$oconnor_hayes_cache
+		fi
+
 		cat "$cache" | dmenu -l 10 "$@"
 	fi
 }
