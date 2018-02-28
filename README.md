@@ -23,7 +23,7 @@ or
 `bash install.sh
 
 4. Run Dmenu_EO  
-*First launch downloads and prepares a copy of ESPDIC*  
+*First launch downloads and prepares each dictionary*  
 `dmenu_eo`
 
 ## License
@@ -55,7 +55,7 @@ aŭ
 `bash install.sh`
 
 4. Lanĉu Dmenu_EO  
-*La unua lanĉo de Dmenu_EO elŝutos kaj preparos la ESPDIC*  
+*La unua lanĉo de Dmenu_EO elŝutos kaj preparos la vortarojn*  
 `dmenu_eo`
 
 ## Permesilo
