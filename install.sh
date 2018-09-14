@@ -20,14 +20,9 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 else
 	printf "Installing dmenu_eo... "
-	# Add to /bin/
-	cp dmenu_eo.sh /usr/local/bin/dmenu_eo
+	# Install bin
+	install -Dm 755 "dmenu_eo.sh" "/usr/local/bin/dmenu_eo"
 
-	# Set permissions
-	chmod 755 "/usr/local/bin/dmenu_eo"
-
-	# Change owner
-	chown root "/usr/local/bin/dmenu_eo"
 	printf "Complete\n"
 
 	printf "Installing manpage... "
