@@ -30,5 +30,17 @@ else
 	chown root "/usr/local/bin/dmenu_eo"
 	printf "Complete\n"
 
+	printf "Installing manpage... "
+	# Install manpage
+	install -Dm 644 "doc/dmenu_eo.1" "/usr/local/share/man/man1"
+	gzip -fq "/usr/local/share/man/man1/dmenu_eo.1"
+
+	printf "Complete\n"
+
+	printf "Updating manpage database... "
+	# Update manpages database
+	mandb -q
+	printf "Complete\n"
+
 	echo "Install success"
 fi
