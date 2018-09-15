@@ -17,10 +17,10 @@ Demo:
 2. Navigate to the cloned repository  
 `cd Dmenu-EO`
 
-3. Run install.sh as root'  
+3. Run install.sh as root  
 `./install.sh`  
 or  
-`bash install.sh
+`bash install.sh`
 
 4. Run Dmenu_EO  
 *First launch downloads and prepares each dictionary*  
