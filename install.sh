@@ -25,10 +25,14 @@ else
 
 	printf "Complete\n"
 
-	printf "Installing manpage... "
-	# Install manpage
+	printf "Installing manpages... "
+	# Install en manpage
 	install -Dm 644 "doc/dmenu_eo.1" "/usr/local/share/man/man1"
 	gzip -fq "/usr/local/share/man/man1/dmenu_eo.1"
+
+	# Install eo manpage
+	install -Dm 644 "doc/eo.dmenu_eo.1" "/usr/local/share/man/eo/man1/dmenu_eo.1"
+	gzip -fq "/usr/local/share/man/eo/man1/dmenu_eo.1"
 
 	printf "Complete\n"
 
