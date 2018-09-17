@@ -24,15 +24,18 @@ rebuild=false
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
+komputeko_dl="https://komputeko.net/Komputeko-ENEO.pdf"
 
 # cache from dmenu_path
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
 if [ -d "$cachedir" ]; then
 	espdic_cache=$cachedir/espdic
 	oconnor_hayes_cache=$cachedir/oconnor_hayes
+	komputeko_cache=$cachedir/komputeko
 else
 	espdic_cache=$HOME/.espdic # if no xdg dir, fall back to dotfile in ~
 	oconnor_hayes_cache=$HOME/.oconnor_hayes # if no xdg dir, fall back to dotfile in ~
+	komputeko_cache=$HOME/.komputeko
 fi
 
 print_usage() {
@@ -74,6 +77,11 @@ build_dictionary() {
 		echo "Wget of O'Connor and Hayes dictionary failed" 1>&2
 		exit 1
 	fi
+	wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
+	if [ "$?" -ne 0 ]; then
+		echo "Wget of Komputeko dictionary failed" 1>&2
+		exit 1
+	fi
 	# Convert DOS newline to Unix
 	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache"
 
@@ -84,22 +92,35 @@ build_dictionary() {
 	# Clear extra lines
 	sed -i '/^\s*$/d' "$oconnor_hayes_cache"
 
+	# Convert Komputeko to text
+	pdftotext -layout "$komputeko_cache.pdf" "$komputeko_cache"
+	# Remove pdf
+	rm "$komputeko_cache.pdf"
+	# Clear Formatting lines
+	sed -ri '/(^\s|^$)/d' "$komputeko_cache"
+	# Clear Header
+	sed -i '/^EN/d' "$komputeko_cache"
+	# Replace first multispace per line with : 
+	sed -ri 's/ {2,}/: /' "$komputeko_cache"
+	# Replace remaining multispace per line with , 
+	sed -ri 's/ {2,}/, /' "$komputeko_cache"
+
 	if ($x_system); then
 		# Add lines using X-system to dictionary
-		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$espdic_cache" "$oconnor_hayes_cache"
+		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
 
 	fi
 
 	if ($h_system); then
 		# Add lines using H-system to dictionary
-		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$espdic_cache" "$oconnor_hayes_cache"
+		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
 
 	fi
 }
 
 rebuild_dictionary() {
 	# Remove old dictionary
-	rm -f "$espdic_cache" "$oconnor_hayes_cache"
+	rm -f "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
 	# Build dictionary
 	build_dictionary
 }
