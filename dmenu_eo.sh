@@ -62,14 +62,14 @@ print_usage() {
 	echo "  KO: Komputeko"
 	echo ""
 	echo "Exit Status(Elira Kodo):"
-	echo " 0  if OK"
-	echo " 0  se bona"
-	echo " 1  if general problem"
-	echo " 1  se ĝenerala problemo"
-	echo " 2  if serious problem"
-	echo " 2  se serioza problemo"
-	echo " 64 if programming issue"
-	echo " 64 se problemo de programado"
+	echo "  0  if OK"
+	echo "  0  se bona"
+	echo "  1  if general problem"
+	echo "  1  se ĝenerala problemo"
+	echo "  2  if serious problem"
+	echo "  2  se serioza problemo"
+	echo "  64 if programming issue"
+	echo "  64 se problemo de programado"
 	exit 0
 }
 
