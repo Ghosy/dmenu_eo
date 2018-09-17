@@ -15,7 +15,7 @@
 .\" You should have received a copy of the GNU General Public License
 .\" along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-.TH DMENU_EO 1 "13 September 2018" "0.1" "dmenu_eo man page"
+.TH DMENU_EO 1 "17 September 2018" "0.1" "dmenu_eo man page"
 .SH NAME
 dmenu_eo \- browse EO,EN definitions supported dictionaries
 .SH SYNOPSIS
@@ -25,8 +25,8 @@ dmenu_eo \- browse EO,EN definitions supported dictionaries
 is a program, which is used to browse Esperanto to English definitions from ESPDIC and O'Conner and Hayes English-Esperanto dictionary, with support for both the X-system and the H-system.
 .SH OPTIONS
 .TP
-.BR \-a ", " \-\-alt ", " \-\-alia
-Use the O'Connor and Hayes dictionary instead of the ESPDIC
+.BR \-d ", " \-\-dict ", " \-\-vortaro "=\fIDICT\fP"
+Specify the dictionary, DICT, which will be opened(See DICTIONARIES section)
 .TP
 .BR \-\-help ", " \-\-helpi
 Display the help message
@@ -42,6 +42,16 @@ Rebuild dictionary with specified systems
 .TP
 .BR \-x ", " \-\-xsystem ", " \-\-xsistemo
 Add X-system entries to dictionary(during rebuild)
+.SH DICTIONARIES
+.TP
+.BR ES
+ESPDIC
+.TP
+.BR OC
+O'Connor and Hayes Dictionary
+.TP
+.BR KO ""
+Komputeko Dictionary
 .SH BUGS
 No known bugs.
 .SH AUTHOR

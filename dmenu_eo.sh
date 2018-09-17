@@ -17,7 +17,6 @@
 
 set -euo pipefail
 
-alt_dic=false
 x_system=false
 h_system=false
 menu=false
@@ -38,21 +37,29 @@ espdic_cache=$cachedir/espdic
 oconnor_hayes_cache=$cachedir/oconnor_hayes
 komputeko_cache=$cachedir/komputeko
 
+# Set default dictionary
+choice="$espdic_cache"
+
 print_usage() {
 	echo "Usage: dmenu_eo [OPTION]..."
 	echo "Options(Agordoj):"
-	echo "  -a, --alt           use the O'Connor and Hayes dictionary instead of the ESPDIC"
-	echo "      --alia          uzi la vortaro de O'Connor kaj Hayes anstataŭ la ESPDIC"
-	echo "      --help          display this help message"
-	echo "      --helpi         prezenti ĉi tiun mesaĝon de helpo"
-	echo "  -h, --hsystem       add H-system entries to dictionary(during rebuild)"
-	echo "      --hsistemo      aldoni H-sistemajn vortarerojn(dum rekonstrui)"
-	echo "  -m, --menu          Select dictionary to browse from a menu"
-	echo "      --menuo         Elekti vortaron por folii per menuo"
-	echo "  -r, --rebuild       rebuild dictionary with specified systems"
-	echo "      --rekonstrui    rekonstrui vortaron per difinitaj sistemoj"
-	echo "  -x, --xsystem       add X-system entries to dictionary(during rebuild)"
+	echo "  -d, --dict=DICT       the DICT to be browsed(options below)"
+	echo "      --vortaro=DICT    la DICT foliota(elektoj malsupre)"
+	echo "      --help            display this help message"
+	echo "      --helpi           prezenti ĉi tiun mesaĝon de helpo"
+	echo "  -h, --hsystem         add H-system entries to dictionary(during rebuild)"
+	echo "      --hsistemo        aldoni H-sistemajn vortarerojn(dum rekonstrui)"
+	echo "  -m, --menu            select dictionary to browse from a menu"
+	echo "      --menuo           elekti vortaron por folii per menuo"
+	echo "  -r, --rebuild         rebuild dictionary with specified systems"
+	echo "      --rekonstrui      rekonstrui vortaron per difinitaj sistemoj"
+	echo "  -x, --xsystem         add X-system entries to dictionary(during rebuild)"
 	echo "      --xsistemo      aldoni X-sistemajn vortarerojn(dum rekonstrui)"
+	echo ""
+	echo "Dictionaries(Vortaroj):"
+	echo "  ES: ESPDIC"
+	echo "  OC: O'Connor and Hayes Dictionary"
+	echo "  KO: Komputeko"
 	echo ""
 	echo "Exit Status(Elira Kodo):"
 	echo " 0  if OK"
@@ -140,12 +147,31 @@ check_depends() {
 	fi
 }
 
+get_choice() {
+	case ${1^^} in
+		ES)
+			choice="$espdic_cache"
+			;;
+		OC)
+			choice="$oconnor_hayes_cache"
+			;;
+		KO)
+			choice="$komputeko_cache"
+			;;
+		*)
+			echo -e "$1 is not a valid option for a dictionary"
+			exit 1;
+			;;
+	esac
+	echo "$choice"
+}
+
 main() {
 	check_depends
 
 	# Getopt
-	local short=ahmrx
-	local long=alia,alt,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
+	local short=d:hmrx
+	local long=dict:,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -158,8 +184,9 @@ main() {
 	# Deal with command-line arguments
 	while true; do
 		case $1 in
-			-a|--alia|--alt)
-				alt_dic=true
+			-d|--dict|--vortaro)
+				get_choice "$2"
+				shift
 				;;
 			--help|--helpi)
 				print_usage
@@ -197,16 +224,11 @@ main() {
 		x_system=true
 		build_dictionary
 	else
-		if ! ($alt_dic); then
-			choice=$espdic_cache
-		else
-			choice=$oconnor_hayes_cache
-		fi
-
-		# dmenu -l 10 "$@" < "$cache"
 		if ($menu); then
 			choice="$cachedir/$(ls "$cachedir" | dmenu -l 10)"
 		fi
+
+		# Display dictionary
 		dmenu -l 10 < "$choice" >> /dev/null
 	fi
 }
