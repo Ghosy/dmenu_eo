@@ -28,15 +28,14 @@ komputeko_dl="https://komputeko.net/Komputeko-ENEO.pdf"
 
 # cache from dmenu_path
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
-if [ -d "$cachedir" ]; then
-	espdic_cache=$cachedir/espdic
-	oconnor_hayes_cache=$cachedir/oconnor_hayes
-	komputeko_cache=$cachedir/komputeko
-else
-	espdic_cache=$HOME/.espdic # if no xdg dir, fall back to dotfile in ~
-	oconnor_hayes_cache=$HOME/.oconnor_hayes # if no xdg dir, fall back to dotfile in ~
-	komputeko_cache=$HOME/.komputeko
-fi
+cachedir="$cachedir/dmenu_eo"
+
+# Check cache dir and create if missing
+mkdir -p "$cachedir"
+
+espdic_cache=$cachedir/espdic
+oconnor_hayes_cache=$cachedir/oconnor_hayes
+komputeko_cache=$cachedir/komputeko
 
 print_usage() {
 	echo "Usage: dmenu_eo [OPTION]..."
@@ -198,7 +197,7 @@ main() {
 			cache=$oconnor_hayes_cache
 		fi
 
-		cat "$cache" | dmenu -l 10 "$@"
+		dmenu -l 10 "$@" < "$cache"
 	fi
 }
 
