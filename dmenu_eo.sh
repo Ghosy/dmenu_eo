@@ -20,6 +20,7 @@ set -euo pipefail
 alt_dic=false
 x_system=false
 h_system=false
+menu=false
 rebuild=false
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
@@ -46,6 +47,8 @@ print_usage() {
 	echo "      --helpi         prezenti ĉi tiun mesaĝon de helpo"
 	echo "  -h, --hsystem       add H-system entries to dictionary(during rebuild)"
 	echo "      --hsistemo      aldoni H-sistemajn vortarerojn(dum rekonstrui)"
+	echo "  -m, --menu          Select dictionary to browse from a menu"
+	echo "      --menuo         Elekti vortaron por folii per menuo"
 	echo "  -r, --rebuild       rebuild dictionary with specified systems"
 	echo "      --rekonstrui    rekonstrui vortaron per difinitaj sistemoj"
 	echo "  -x, --xsystem       add X-system entries to dictionary(during rebuild)"
@@ -141,8 +144,8 @@ main() {
 	check_depends
 
 	# Getopt
-	local short=ahrx
-	local long=alia,alt,hsystem,hsistemo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
+	local short=ahmrx
+	local long=alia,alt,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -163,6 +166,9 @@ main() {
 				;;
 			-h|--hsystem|--hsistemo)
 				h_system=true
+				;;
+			-m|--menu|--menuo)
+				menu=true
 				;;
 			-r|--rebuild|--rekonstrui)
 				rebuild=true
@@ -192,12 +198,16 @@ main() {
 		build_dictionary
 	else
 		if ! ($alt_dic); then
-			cache=$espdic_cache
+			choice=$espdic_cache
 		else
-			cache=$oconnor_hayes_cache
+			choice=$oconnor_hayes_cache
 		fi
 
-		dmenu -l 10 "$@" < "$cache"
+		# dmenu -l 10 "$@" < "$cache"
+		if ($menu); then
+			choice="$cachedir/$(ls "$cachedir" | dmenu -l 10)"
+		fi
+		dmenu -l 10 < "$choice" >> /dev/null
 	fi
 }
 
