@@ -20,7 +20,6 @@ set -euo pipefail
 x_system=false
 h_system=false
 menu=false
-rebuild=false
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
@@ -132,6 +131,7 @@ rebuild_dictionary() {
 	rm -f "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
 	# Build dictionary
 	build_dictionary
+	exit 0
 }
 
 check_depends() {
@@ -199,7 +199,7 @@ main() {
 				menu=true
 				;;
 			-r|--rebuild|--rekonstrui)
-				rebuild=true
+				rebuild_dictionary
 				;;
 			-x|--xsystem|--xsistemo)
 				x_system=true
@@ -217,10 +217,8 @@ main() {
 		shift
 	done
 
-	if ($rebuild); then
-		rebuild_dictionary
 	# If ESPDIC is not installed
-	elif [ ! -r "$espdic_cache" ] && [ ! -r "$oconnor_hayes_cache" ]; then
+	if [ ! -r "$espdic_cache" ] && [ ! -r "$oconnor_hayes_cache" ]; then
 		# Assume X-system by default
 		x_system=true
 		build_dictionary
