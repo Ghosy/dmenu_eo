@@ -164,7 +164,8 @@ get_choice() {
 			exit 1;
 			;;
 	esac
-	echo "$choice"
+	# Return choice
+	echo "$choice" >> /dev/null
 }
 
 main() {
