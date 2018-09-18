@@ -137,12 +137,12 @@ rebuild_dictionary() {
 check_depends() {
 	# Check for wget
 	if ! type wget >>/dev/null; then
-		echo "Wget is not installed. Please install wget."
+		echo "Wget is not installed. Please install wget." 1>&2
 		exit 1
 	fi
 	# Check for dmenu
 	if ! type dmenu >>/dev/null; then
-		echo "Dmenu is not installed. Please install dmenu."
+		echo "Dmenu is not installed. Please install dmenu." 1>&2
 		exit 1
 	fi
 }
@@ -159,7 +159,8 @@ get_choice() {
 			choice="$komputeko_cache"
 			;;
 		*)
-			echo -e "$1 is not a valid option for a dictionary"
+			echo "$1 is not a valid option for a dictionary" 1>&2
+
 			exit 1;
 			;;
 	esac
