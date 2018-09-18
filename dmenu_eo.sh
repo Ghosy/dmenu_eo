@@ -36,6 +36,8 @@ espdic_cache=$cachedir/espdic
 oconnor_hayes_cache=$cachedir/oconnor_hayes
 komputeko_cache=$cachedir/komputeko
 
+dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
+
 # Set default dictionary
 choice="$espdic_cache"
 
@@ -113,22 +115,27 @@ build_dictionary() {
 	# Replace remaining multispace per line with , 
 	sed -ri 's/ {2,}/, /' "$komputeko_cache"
 
-	if ($x_system); then
-		# Add lines using X-system to dictionary
-		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
+	for dict in ${dicts[*]}; do
 
-	fi
+		if ($x_system); then
+			# Add lines using X-system to dictionary
+			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$dict"
 
-	if ($h_system); then
-		# Add lines using H-system to dictionary
-		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
+		fi
 
-	fi
+		if ($h_system); then
+			# Add lines using H-system to dictionary
+			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$dict"
+
+		fi
+	done
 }
 
 rebuild_dictionary() {
-	# Remove old dictionary
-	rm -f "$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache"
+	# Remove old dictionaries
+	for dict in ${dicts[*]}; do
+		rm -f "$dict"
+	done
 	# Build dictionary
 	build_dictionary
 	exit 0
