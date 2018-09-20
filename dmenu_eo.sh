@@ -40,7 +40,7 @@ dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
 menu_choices="ESPDIC\nO'Connor And Hayes\nKomputeko";
 
 # Set default dictionary
-choice="$espdic_cache"
+choice=""
 
 print_usage() {
 	echo "Usage: dmenu_eo [OPTION]..."
@@ -158,6 +158,10 @@ check_depends() {
 }
 
 get_choice() {
+	if [ ! -z "$choice" ]; then
+		echo "A dictionary option has already been chosen. Only use one flag of -m or -d" 1>&2
+		exit 1
+	fi
 	case ${1^^} in
 		ES|ESPDIC)
 			choice="$espdic_cache"
@@ -174,8 +178,6 @@ get_choice() {
 			exit 1;
 			;;
 	esac
-	# Return choice
-	echo "$choice" >> /dev/null
 }
 
 main() {
@@ -234,6 +236,10 @@ main() {
 		x_system=true
 		build_dictionary
 	else
+		# If no dictionary has been selected
+		if [ -z "$choice" ]; then
+			choice="$espdic_cache"
+		fi
 		# Display dictionary
 		dmenu -l 10 < "$choice" >> /dev/null
 	fi
