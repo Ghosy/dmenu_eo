@@ -102,6 +102,8 @@ build_dictionary() {
 	sed -i '/\*/,$d' "$oconnor_hayes_cache"
 	# Clear extra lines
 	sed -i '/^\s*$/d' "$oconnor_hayes_cache"
+	# Remove extra .'s
+	sed -ri 's/(\.|\. \[.+)$//g' "$oconnor_hayes_cache"
 
 	# Convert Komputeko to text
 	pdftotext -layout "$komputeko_cache.pdf" "$komputeko_cache"
