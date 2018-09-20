@@ -19,7 +19,6 @@ set -euo pipefail
 
 x_system=false
 h_system=false
-menu=false
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
@@ -37,6 +36,8 @@ oconnor_hayes_cache=$cachedir/oconnor_hayes
 komputeko_cache=$cachedir/komputeko
 
 dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
+
+menu_choices="ESPDIC\nO'Connor And Hayes\nKomputeko";
 
 # Set default dictionary
 choice="$espdic_cache"
@@ -156,13 +157,13 @@ check_depends() {
 
 get_choice() {
 	case ${1^^} in
-		ES)
+		ES|ESPDIC)
 			choice="$espdic_cache"
 			;;
-		OC)
+		OC|O\'CONNOR\ AND\ HAYES)
 			choice="$oconnor_hayes_cache"
 			;;
-		KO)
+		KO|KOMPUTEKO)
 			choice="$komputeko_cache"
 			;;
 		*)
@@ -204,7 +205,7 @@ main() {
 				h_system=true
 				;;
 			-m|--menu|--menuo)
-				menu=true
+				get_choice "$(echo -e "$menu_choices" | dmenu -l 10)"
 				;;
 			-r|--rebuild|--rekonstrui)
 				rebuild_dictionary
@@ -231,10 +232,6 @@ main() {
 		x_system=true
 		build_dictionary
 	else
-		if ($menu); then
-			choice="$cachedir/$(ls "$cachedir" | dmenu -l 10)"
-		fi
-
 		# Display dictionary
 		dmenu -l 10 < "$choice" >> /dev/null
 	fi
