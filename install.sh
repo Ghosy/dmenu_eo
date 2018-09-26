@@ -25,6 +25,10 @@ else
 
 	printf "Complete\n"
 
+	printf "Installing soundboard completions... "
+	install -Dm 644 "doc/dmenu_eo.bashcomp" "/usr/share/bash-completion/completions/dmenu_eo"
+	printf "Complete\n"
+
 	printf "Installing manpages... "
 	# Install en manpage
 	install -Dm 644 "doc/dmenu_eo.1" "/usr/local/share/man/man1"

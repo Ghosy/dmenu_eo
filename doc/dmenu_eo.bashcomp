@@ -1,0 +1,32 @@
+_dmenu_eo() {
+	local cur prev opts
+		COMPREPLY=()
+		cur="${COMP_WORDS[COMP_CWORD]}"
+		prev="${COMP_WORDS[COMP_CWORD-1]}"
+		dicts="ES OC KO";
+		case $prev in
+			'-d' | '--dict' | '--vortaro')
+				COMPREPLY=( $(compgen -W "$dicts" -- $cur) )
+				return 0
+				;;
+		esac
+
+		OPTS="--dict
+			--help
+			--helpi
+			--hsistemo
+			--hsystem
+			--menu
+			--menuo
+			--rebuild
+			--rekonstrui
+			--vortaro
+			--xsistemo
+			--xsystem"
+
+		if [[ ${cur} == -* ]] ; then
+			COMPREPLY=( $(compgen -W "${OPTS}" -- ${cur}) )
+				return 0
+				fi
+}
+complete -F _dmenu_eo dmenu_eo
