@@ -196,7 +196,7 @@ get_choice() {
 			;;
 		VI|VIKIPEDIO)
 			search_vikipedio
-			return 0
+			exit 0
 			;;
 		*)
 			echo "$1 is not a valid option for a dictionary" 1>&2
