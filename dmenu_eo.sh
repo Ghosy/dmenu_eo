@@ -23,6 +23,7 @@ h_system=false
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
 komputeko_dl="https://komputeko.net/Komputeko-ENEO.pdf"
+vikipedio_search="https://eo.wikipedia.org/w/api.php?action=opensearch&search="
 
 # cache from dmenu_path
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
@@ -37,7 +38,7 @@ komputeko_cache=$cachedir/komputeko
 
 dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
 
-menu_choices="ESPDIC\nO'Connor And Hayes\nKomputeko";
+menu_choices="ESPDIC\\nO'Connor And Hayes\\nKomputeko\\nVikipedio";
 
 # Set default dictionary
 choice=""
@@ -62,6 +63,7 @@ print_usage() {
 	echo "  ES: ESPDIC"
 	echo "  OC: O'Connor and Hayes Dictionary"
 	echo "  KO: Komputeko"
+	echo "  VI: Vikipedio"
 	echo ""
 	echo "Exit Status(Elira Kodo):"
 	echo "  0  if OK"
@@ -157,6 +159,26 @@ check_depends() {
 	fi
 }
 
+search_vikipedio() {
+	if ! type jq >>/dev/null; then
+		echo "Jq is not installed. Please install dmenu to use Vikipedio." 1>&2
+		exit 1
+	fi
+
+	input=$(echo "" | dmenu -p "Vikipedio:")
+	declare -A results
+	IFS=$'\n'
+	search=$(wget -o /dev/null -O - "https://eo.wikipedia.org/w/api.php?action=opensearch&search=$input")
+	keys=( $(echo -e "$search" | jq -r '.[1]|join("\n")') )
+	vals=( $(echo -e "$search" | jq -r '.[3]|join("\n")') )
+
+	for ((i=0; i < ${#keys[*]}; i++)); do
+		results["${keys[i]}"]=${vals[i]}
+	done
+
+	xdg-open "${results[$(echo -e "${keys[*]}" | dmenu -l 10)]}"
+}
+
 get_choice() {
 	if [ ! -z "$choice" ]; then
 		echo "A dictionary option has already been chosen. Only use one flag of -m or -d" 1>&2
@@ -171,6 +193,10 @@ get_choice() {
 			;;
 		KO|KOMPUTEKO)
 			choice="$komputeko_cache"
+			;;
+		VI|VIKIPEDIO)
+			search_vikipedio
+			return 0
 			;;
 		*)
 			echo "$1 is not a valid option for a dictionary" 1>&2

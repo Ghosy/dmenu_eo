@@ -3,7 +3,7 @@ _dmenu_eo() {
 		COMPREPLY=()
 		cur="${COMP_WORDS[COMP_CWORD]}"
 		prev="${COMP_WORDS[COMP_CWORD-1]}"
-		dicts="ES OC KO";
+		dicts="ES OC KO VI";
 		case $prev in
 			'-d' | '--dict' | '--vortaro')
 				COMPREPLY=( $(compgen -W "$dicts" -- $cur) )
