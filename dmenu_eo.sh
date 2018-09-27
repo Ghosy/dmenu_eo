@@ -235,7 +235,7 @@ main() {
 				h_system=true
 				;;
 			-m|--menu|--menuo)
-				get_choice "$(echo -e "$menu_choices" | dmenu -l 10)"
+				get_choice "$(echo -e "$menu_choices" | dmenu -i -l 10)"
 				;;
 			-r|--rebuild|--rekonstrui)
 				rebuild_dictionary
