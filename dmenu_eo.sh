@@ -56,8 +56,10 @@ print_usage() {
 	echo "      --menuo           elekti vortaron por folii per menuo"
 	echo "  -r, --rebuild         rebuild dictionary with specified systems"
 	echo "      --rekonstrui      rekonstrui vortaron per difinitaj sistemoj"
+	echo "      --version         show the version information for dmenu_eo"
+	echo "      --versio          elmontri la versia informacio de dmenu_eo"
 	echo "  -x, --xsystem         add X-system entries to dictionary(during rebuild)"
-	echo "      --xsistemo      aldoni X-sistemajn vortarerojn(dum rekonstrui)"
+	echo "      --xsistemo        aldoni X-sistemajn vortarerojn(dum rekonstrui)"
 	echo ""
 	echo "Dictionaries(Vortaroj):"
 	echo "  ES: ESPDIC"
@@ -74,6 +76,16 @@ print_usage() {
 	echo "  2  se serioza problemo"
 	echo "  64 if programming issue"
 	echo "  64 se problemo de programado"
+	exit 0
+}
+
+print_version() {
+	echo "dmenu_eo, version 0.1"
+	echo "Copyright (C) 2016-2018 Zachary Matthews"
+	echo "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>"
+	echo ""
+	echo "This is free software; you are free to change and redistribute it."
+	echo "There is NO WARRANTY, to the extent permitted by law."
 	exit 0
 }
 
@@ -211,7 +223,7 @@ main() {
 
 	# Getopt
 	local short=d:hmrx
-	local long=dict:,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi
+	local long=dict:,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -239,6 +251,9 @@ main() {
 				;;
 			-r|--rebuild|--rekonstrui)
 				rebuild_dictionary
+				;;
+			--version|--versio)
+				print_version
 				;;
 			-x|--xsystem|--xsistemo)
 				x_system=true
