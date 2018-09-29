@@ -19,6 +19,7 @@ set -euo pipefail
 
 x_system=false
 h_system=false
+locale=en
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
@@ -48,6 +49,8 @@ print_usage() {
 	echo "Options(Agordoj):"
 	echo "  -d, --dict=DICT       the DICT to be browsed(options below)"
 	echo "      --vortaro=DICT    la DICT foliota(elektoj malsupre)"
+	echo "      --eo              display all messages in Esperanto"
+	echo "                        prezenti ĉiujn mesaĝojn Esperante"
 	echo "      --help            display this help message"
 	echo "      --helpi           prezenti ĉi tiun mesaĝon de helpo"
 	echo "  -h, --hsystem         add H-system entries to dictionary(during rebuild)"
@@ -89,22 +92,34 @@ print_version() {
 	exit 0
 }
 
+print_err() {
+	# If enough parameters and locale is eo, else use en
+	if [ "$#" -gt "1" ] && [[ "$locale" == "eo" ]]; then
+		echo "$2" 1>&2
+	else
+		echo "$1" 1>&2
+	fi
+}
+
 build_dictionary() {
 	# Get ESPDIC
 	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		echo "Wget of ESPDIC failed" 1>&2
+		# echo "Wget of ESPDIC failed" 1>&2
+		print_err "Wget of ESPDIC failed" "Wget de ESPDIC paneis"
 		exit 1
 	fi
 	# Get O'Connor/Hayes
 	wget -o /dev/null -O "$oconnor_hayes_cache" $oconnor_hayes_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		echo "Wget of O'Connor and Hayes dictionary failed" 1>&2
+		# echo "Wget of O'Connor and Hayes dictionary failed" 1>&2
+		print_err "Wget of O'Connor and Hayes dictionary failed" "Wget de O'Connor kaj Hayes vortaro paneis"
 		exit 1
 	fi
 	wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		echo "Wget of Komputeko dictionary failed" 1>&2
+		# echo "Wget of Komputeko dictionary failed" 1>&2
+		print_err "Wget of Komputeko failed" "Wget de Komputeko paneis"
 		exit 1
 	fi
 	# Convert DOS newline to Unix
@@ -161,26 +176,29 @@ rebuild_dictionary() {
 check_depends() {
 	# Check for wget
 	if ! type wget >>/dev/null; then
-		echo "Wget is not installed. Please install wget." 1>&2
+		# echo "Wget is not installed. Please install wget." 1>&2
+		print_err "Wget is not installed. Please install wget." "Wget ne estas instalita. Bonvolu instali wget."
 		exit 1
 	fi
 	# Check for dmenu
 	if ! type dmenu >>/dev/null; then
-		echo "Dmenu is not installed. Please install dmenu." 1>&2
+		# echo "Dmenu is not installed. Please install dmenu." 1>&2
+		print_err "Dmenu is not installed. Please install dmenu." "Dmenu ne estas instalita. Bonvolu instali dmenu."
 		exit 1
 	fi
 }
 
 search_vikipedio() {
 	if ! type jq >>/dev/null; then
-		echo "Jq is not installed. Please install dmenu to use Vikipedio." 1>&2
+		# echo "Jq is not installed. Please install dmenu to use Vikipedio." 1>&2
+		print_err "Jq is not installed. Please install jq to use Vikipedio." "Jq ne estas instalita. Bonvolu instali jq por uzi Vikipedion."
 		exit 1
 	fi
 
 	input=$(echo "" | dmenu -p "Vikipedio:")
 	declare -A results
 	IFS=$'\n'
-	search=$(wget -o /dev/null -O - "https://eo.wikipedia.org/w/api.php?action=opensearch&search=$input")
+	search=$(wget -o /dev/null -O - "$vikipedio_search$input")
 	keys=( $(echo -e "$search" | jq -r '.[1]|join("\n")') )
 	vals=( $(echo -e "$search" | jq -r '.[3]|join("\n")') )
 
@@ -193,7 +211,8 @@ search_vikipedio() {
 
 get_choice() {
 	if [ ! -z "$choice" ]; then
-		echo "A dictionary option has already been chosen. Only use one flag of -m or -d" 1>&2
+		# echo "A dictionary option has already been chosen. Only use one flag of -m or -d" 1>&2
+		print_err "A dictionary option has already been chosen. Only use one flag of -m or -d." "Elekto de vortaro jam elektis. Nur uzu unu flagon de -m aŭ -d."
 		exit 1
 	fi
 	case ${1^^} in
@@ -211,7 +230,8 @@ get_choice() {
 			exit 0
 			;;
 		*)
-			echo "$1 is not a valid option for a dictionary" 1>&2
+			# echo "$1 is not a valid option for a dictionary" 1>&2
+			print_err "$1 is not a valid option for a dictionary" "$1 ne estas valida elekto por vortaro"
 
 			exit 1;
 			;;
@@ -223,7 +243,7 @@ main() {
 
 	# Getopt
 	local short=d:hmrx
-	local long=dict:,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi,version,versio
+	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -239,6 +259,9 @@ main() {
 			-d|--dict|--vortaro)
 				get_choice "$2"
 				shift
+				;;
+			--eo)
+				locale="eo"
 				;;
 			--help|--helpi)
 				print_usage
@@ -264,7 +287,8 @@ main() {
 				;;
 			*)
 				# Unknown option
-				echo "$2 argument not properly handled"
+				# echo "$2 argument not properly handled"
+				print_err "$2 argument not properly handled" "$2 argumento ne prave uzis"
 				exit 64
 				;;
 		esac

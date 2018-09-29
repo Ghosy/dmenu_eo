@@ -12,6 +12,7 @@ _dmenu_eo() {
 		esac
 
 		OPTS="--dict
+			--eo
 			--help
 			--helpi
 			--hsistemo
