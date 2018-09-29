@@ -19,7 +19,8 @@ set -euo pipefail
 
 x_system=false
 h_system=false
-locale=en
+# Get default system languae as default locale setting
+locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
 # ESPDIC download location
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
