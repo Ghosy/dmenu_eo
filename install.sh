@@ -23,11 +23,11 @@ else
 	# Install bin
 	install -Dm 755 "dmenu_eo.sh" "/usr/local/bin/dmenu_eo"
 
-	printf "Complete\n"
+	printf "Complete\\n"
 
 	printf "Installing soundboard completions... "
 	install -Dm 644 "doc/dmenu_eo.bashcomp" "/usr/share/bash-completion/completions/dmenu_eo"
-	printf "Complete\n"
+	printf "Complete\\n"
 
 	printf "Installing manpages... "
 	# Install en manpage
@@ -38,12 +38,12 @@ else
 	install -Dm 644 "doc/eo.dmenu_eo.1" "/usr/local/share/man/eo/man1/dmenu_eo.1"
 	gzip -fq "/usr/local/share/man/eo/man1/dmenu_eo.1"
 
-	printf "Complete\n"
+	printf "Complete\\n"
 
 	printf "Updating manpage database... "
 	# Update manpages database
 	mandb -q
-	printf "Complete\n"
+	printf "Complete\\n"
 
 	echo "Install success"
 fi

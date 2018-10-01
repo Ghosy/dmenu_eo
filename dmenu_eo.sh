@@ -195,8 +195,9 @@ search_vikipedio() {
 	declare -A results
 	IFS=$'\n'
 	search=$(wget -o /dev/null -O - "$vikipedio_search$input")
-	keys=( $(echo -e "$search" | jq -r '.[1]|join("\n")') )
-	vals=( $(echo -e "$search" | jq -r '.[3]|join("\n")') )
+	# Get array of search results with corresponding URLs
+	mapfile -t keys < <(jq -r '.[1]|join("\n")' <<< "$search")
+	mapfile -t vals < <(jq -r '.[3]|join("\n")' <<< "$search")
 
 	for ((i=0; i < ${#keys[*]}; i++)); do
 		results["${keys[i]}"]=${vals[i]}
