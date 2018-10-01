@@ -19,6 +19,7 @@ set -euo pipefail
 
 x_system=false
 h_system=false
+rebuild=false
 # Get default system languae as default locale setting
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
 # ESPDIC download location
@@ -145,7 +146,7 @@ build_dictionary() {
 	# Replace remaining multispace per line with , 
 	sed -ri 's/ {2,}/, /' "$komputeko_cache"
 
-	for dict in ${dicts[*]}; do
+	for dict in "${dicts[@]}"; do
 
 		if ($x_system); then
 			# Add lines using X-system to dictionary
@@ -266,7 +267,8 @@ main() {
 				get_choice "$(echo -e "$menu_choices" | dmenu -i -l 10)"
 				;;
 			-r|--rebuild|--rekonstrui)
-				rebuild_dictionary
+				# rebuild_dictionary
+				rebuild=true
 				;;
 			--version|--versio)
 				print_version
@@ -287,6 +289,9 @@ main() {
 		shift
 	done
 
+	if ($rebuild); then
+		rebuild_dictionary
+	fi
 	# If ESPDIC is not installed
 	if [ ! -r "$espdic_cache" ] && [ ! -r "$oconnor_hayes_cache" ]; then
 		# Assume X-system by default
