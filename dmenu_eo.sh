@@ -106,21 +106,18 @@ build_dictionary() {
 	# Get ESPDIC
 	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		# echo "Wget of ESPDIC failed" 1>&2
-		print_err "Wget of ESPDIC failed" "Wget de ESPDIC paneis"
+		print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
 		exit 1
 	fi
 	# Get O'Connor/Hayes
 	wget -o /dev/null -O "$oconnor_hayes_cache" $oconnor_hayes_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		# echo "Wget of O'Connor and Hayes dictionary failed" 1>&2
-		print_err "Wget of O'Connor and Hayes dictionary failed" "Wget de O'Connor kaj Hayes vortaro paneis"
+		print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
 		exit 1
 	fi
 	wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
-		# echo "Wget of Komputeko dictionary failed" 1>&2
-		print_err "Wget of Komputeko failed" "Wget de Komputeko paneis"
+		print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
 		exit 1
 	fi
 	# Convert DOS newline to Unix
@@ -177,13 +174,11 @@ rebuild_dictionary() {
 check_depends() {
 	# Check for wget
 	if ! type wget >>/dev/null; then
-		# echo "Wget is not installed. Please install wget." 1>&2
 		print_err "Wget is not installed. Please install wget." "Wget ne estas instalita. Bonvolu instali wget."
 		exit 1
 	fi
 	# Check for dmenu
 	if ! type dmenu >>/dev/null; then
-		# echo "Dmenu is not installed. Please install dmenu." 1>&2
 		print_err "Dmenu is not installed. Please install dmenu." "Dmenu ne estas instalita. Bonvolu instali dmenu."
 		exit 1
 	fi
@@ -191,7 +186,6 @@ check_depends() {
 
 search_vikipedio() {
 	if ! type jq >>/dev/null; then
-		# echo "Jq is not installed. Please install dmenu to use Vikipedio." 1>&2
 		print_err "Jq is not installed. Please install jq to use Vikipedio." "Jq ne estas instalita. Bonvolu instali jq por uzi Vikipedion."
 		exit 1
 	fi
@@ -212,7 +206,6 @@ search_vikipedio() {
 
 get_choice() {
 	if [ ! -z "$choice" ]; then
-		# echo "A dictionary option has already been chosen. Only use one flag of -m or -d" 1>&2
 		print_err "A dictionary option has already been chosen. Only use one flag of -m or -d." "Elekto de vortaro jam elektis. Nur uzu unu flagon de -m aŭ -d."
 		exit 1
 	fi
@@ -231,8 +224,7 @@ get_choice() {
 			exit 0
 			;;
 		*)
-			# echo "$1 is not a valid option for a dictionary" 1>&2
-			print_err "$1 is not a valid option for a dictionary" "$1 ne estas valida elekto por vortaro"
+			print_err "$1 is not a valid option for a dictionary." "$1 ne estas valida elekto por vortaro."
 
 			exit 1;
 			;;
@@ -288,8 +280,7 @@ main() {
 				;;
 			*)
 				# Unknown option
-				# echo "$2 argument not properly handled"
-				print_err "$2 argument not properly handled" "$2 argumento ne prave uzis"
+				print_err "$2 argument not properly handled." "$2 argumento ne prave uzis."
 				exit 64
 				;;
 		esac
