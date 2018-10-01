@@ -293,19 +293,21 @@ main() {
 	if ($rebuild); then
 		rebuild_dictionary
 	fi
-	# If ESPDIC is not installed
-	if [ ! -r "$espdic_cache" ] && [ ! -r "$oconnor_hayes_cache" ]; then
-		# Assume X-system by default
-		x_system=true
-		build_dictionary
-	else
-		# If no dictionary has been selected
-		if [ -z "$choice" ]; then
-			choice="$espdic_cache"
+	# If any dictionaries aren't installed
+	for dict in "${dicts[@]}"; do
+		if [ ! -r "$dict" ]; then
+			# Assume X-system by default
+			x_system=true
+			build_dictionary
 		fi
-		# Display dictionary
-		dmenu -l 10 < "$choice" >> /dev/null
+	done
+
+	# If no dictionary has been selected
+	if [ -z "$choice" ]; then
+		choice="$espdic_cache"
 	fi
+	# Display dictionary
+	dmenu -l 10 < "$choice" >> /dev/null
 }
 
 main "$@"
