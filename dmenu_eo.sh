@@ -191,7 +191,7 @@ search_vikipedio() {
 		exit 1
 	fi
 
-	input=$(echo "" | dmenu -p "Vikipedio:")
+	input=$(dmenu -p "Vikipedio:" < /dev/null)
 	declare -A results
 	IFS=$'\n'
 	search=$(wget -o /dev/null -O - "$vikipedio_search$input")
@@ -203,7 +203,7 @@ search_vikipedio() {
 		results["${keys[i]}"]=${vals[i]}
 	done
 
-	xdg-open "${results[$(echo -e "${keys[*]}" | dmenu -l 10)]}"
+	xdg-open "${results[$(dmenu -l 10 <<< "${keys[*]}")]}"
 }
 
 get_choice() {
@@ -265,7 +265,7 @@ main() {
 				h_system=true
 				;;
 			-m|--menu|--menuo)
-				get_choice "$(echo -e "$menu_choices" | dmenu -i -l 10)"
+				get_choice "$(dmenu -i -l 10 <<< "$menu_choices")"
 				;;
 			-r|--rebuild|--rekonstrui)
 				# rebuild_dictionary
