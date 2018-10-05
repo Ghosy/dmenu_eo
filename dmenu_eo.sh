@@ -234,6 +234,10 @@ get_choice() {
 			search_vikipedio
 			exit 0
 			;;
+		"")
+			# If escape is pressed, quit
+			exit 0
+			;;
 		*)
 			print_err "$1 is not a valid option for a dictionary." "$1 ne estas valida elekto por vortaro."
 
