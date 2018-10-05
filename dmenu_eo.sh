@@ -20,6 +20,7 @@ set -euo pipefail
 x_system=false
 h_system=false
 rebuild=false
+dmenu=""
 # Get default system languae as default locale setting
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
 # ESPDIC download location
@@ -61,6 +62,8 @@ print_usage() {
 	echo "      --menuo           elekti vortaron por folii per menuo"
 	echo "  -r, --rebuild         rebuild dictionary with specified systems"
 	echo "      --rekonstrui      rekonstrui vortaron per difinitaj sistemoj"
+	echo "      --rofi            override the default and use rofi instead of dmenu"
+	echo "                        transpasi la defaŭlto kaj uzi rofi anstataŭ dmenu"
 	echo "      --version         show the version information for dmenu_eo"
 	echo "      --versio          elmontri la versia informacio de dmenu_eo"
 	echo "  -x, --xsystem         add X-system entries to dictionary(during rebuild)"
@@ -174,12 +177,16 @@ rebuild_dictionary() {
 
 check_depends() {
 	# Check for wget
-	if ! type wget >>/dev/null; then
+	if ! type wget >> /dev/null; then
 		print_err "Wget is not installed. Please install wget." "Wget ne estas instalita. Bonvolu instali wget."
 		exit 1
 	fi
-	# Check for dmenu
-	if ! type dmenu >>/dev/null; then
+	# Check for dmenu or rofi
+	if type dmenu >> /dev/null; then
+		dmenu="dmenu"
+	elif type rofi >> /dev/null; then
+		dmenu="rofi -dmenu"
+	else
 		print_err "Dmenu is not installed. Please install dmenu." "Dmenu ne estas instalita. Bonvolu instali dmenu."
 		exit 1
 	fi
@@ -191,7 +198,8 @@ search_vikipedio() {
 		exit 1
 	fi
 
-	input=$(dmenu -p "Vikipedio:" < /dev/null)
+	cmd="$dmenu -p \"Vikipedio:\" < /dev/null"
+	input=$(eval "$cmd")
 	declare -A results
 	IFS=$'\n'
 	search=$(wget -o /dev/null -O - "$vikipedio_search$input")
@@ -203,7 +211,8 @@ search_vikipedio() {
 		results["${keys[i]}"]=${vals[i]}
 	done
 
-	xdg-open "${results[$(dmenu -l 10 <<< "${keys[*]}")]}"
+	cmd="$dmenu -l 10 <<< \"${keys[*]}\""
+	xdg-open "${results[$(eval "$cmd")]}"
 }
 
 get_choice() {
@@ -238,7 +247,7 @@ main() {
 
 	# Getopt
 	local short=d:hmrx
-	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,xsystem,xsistemo,help,helpi,version,versio
+	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,rofi,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -265,11 +274,19 @@ main() {
 				h_system=true
 				;;
 			-m|--menu|--menuo)
-				get_choice "$(dmenu -i -l 10 <<< "$menu_choices")"
+				cmd=$(echo -e "$dmenu -i -l 10 <<< \"$menu_choices\"")
+				get_choice "$(eval "$cmd")"
 				;;
 			-r|--rebuild|--rekonstrui)
 				# rebuild_dictionary
 				rebuild=true
+				;;
+			--rofi)
+				if ! type rofi >> /dev/null; then
+					print_err "Rofi is not installed. Please install rofi to use --rofi." "Rofi ne estas instalita. Bonvolu instali rofi por uzi --rofi."
+					exit 1
+				fi
+				dmenu="rofi -dmenu"
 				;;
 			--version|--versio)
 				print_version
@@ -307,7 +324,8 @@ main() {
 		choice="$espdic_cache"
 	fi
 	# Display dictionary
-	dmenu -l 10 < "$choice" >> /dev/null
+	cmd="$dmenu -l 10 < \"$choice\" >> /dev/null"
+	eval "$cmd"
 }
 
 main "$@"

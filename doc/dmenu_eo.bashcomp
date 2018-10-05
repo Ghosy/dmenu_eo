@@ -21,6 +21,7 @@ _dmenu_eo() {
 			--menuo
 			--rebuild
 			--rekonstrui
+			--rofi
 			--version
 			--vortaro
 			--xsistemo
