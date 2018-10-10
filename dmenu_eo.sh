@@ -104,11 +104,13 @@ print_version() {
 }
 
 print_err() {
-	# If enough parameters and locale is eo, else use en
-	if [ "$#" -gt "1" ] && [[ "$locale" == "eo" ]]; then
-		echo "$2" 1>&2
-	else
-		echo "$1" 1>&2
+	if (! $silent); then
+		# If enough parameters and locale is eo, else use en
+		if [ "$#" -gt "1" ] && [[ "$locale" == "eo" ]]; then
+			echo "$2" 1>&2
+		else
+			echo "$1" 1>&2
+		fi
 	fi
 }
 
@@ -257,7 +259,7 @@ main() {
 
 	# Getopt
 	local short=d:hmrx
-	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,rebuild,rekonstrui,rofi,xsystem,xsistemo,help,helpi,version,versio
+	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,quiet,mallauxta,mallauta,mallaŭta,rebuild,rekonstrui,rofi,silent,silenta,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -301,7 +303,7 @@ main() {
 				fi
 				dmenu="rofi -dmenu"
 				;;
-			--silent|silenta)
+			--silent|--silenta)
 				silent=true
 				;;
 			--version|--versio)
