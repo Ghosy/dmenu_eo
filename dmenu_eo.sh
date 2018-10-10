@@ -258,7 +258,7 @@ main() {
 	check_depends
 
 	# Getopt
-	local short=d:hmrx
+	local short=d:hmqrx
 	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,quiet,mallauxta,mallauta,mallaŭta,rebuild,rekonstrui,rofi,silent,silenta,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
