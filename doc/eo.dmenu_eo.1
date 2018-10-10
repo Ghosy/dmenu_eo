@@ -24,6 +24,7 @@ dmenu_eo \- Folii EO,EN vortareroj en subtenataj vortaroj
 .B dmenu_eo
 estas programo, kiun oni povas uzi por folii vortareroj el ESPDIC kaj Esperanto-La Angla vortaro de O'Connor kaj Hayes. La programo subtenas ambaŭ la X-sistemon kaj la H-sistemon.
 .SH AGORDOJ
+Ĉiuj agordoj, kiu havas specialajn signojn, havas agordojn kiu uzas la h-sistemo kaj la x-sistemo
 .TP
 .BR \-d ", " \-\-dict ", " \-\-vortaro "=\fIDICT\fP"
 Elekti la vortaro, DICT, por folii(Vidu VORTAROJ sekcio)
@@ -40,11 +41,17 @@ Aldoni H-sistemajn vortarerojn(dum rekonstrui)
 .BR \-m ", " \-\-menu ", " \-\-menuo
 Elekti vortaron por folii per menuo
 .TP
+.BR \-q ", " \-\-quiet ", " \-\-mallaŭta
+Kaŝi ĉiujn mesaĝojn, krom eraraj mesaĝoj
+.TP
 .BR \-r ", " \-\-rebuild ", " \-\-rekonstrui
 Rekonstrui vortaron per difinitaj sistemoj
 .TP
 .BR "" "    " \-\-rofi
 Transpasi la defaŭlto kaj uzi rofi anstataŭ dmenu
+.TP
+.BR "" "    " \-\-silent "," \-\-silenta
+Kaŝi ĉiujn mesaĝojn
 .TP
 .BR "" "    " \-\-version "," \-\-versio
 Elmontri la versia informacio de dmenu_eo

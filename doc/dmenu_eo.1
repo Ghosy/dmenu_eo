@@ -24,6 +24,7 @@ dmenu_eo \- browse EO,EN definitions supported dictionaries
 .B dmenu_eo
 is a program, which is used to browse Esperanto to English definitions from ESPDIC and O'Conner and Hayes English-Esperanto dictionary, with support for both the X-system and the H-system.
 .SH OPTIONS
+All options with special characters can also be entered using the h-system or x-system
 .TP
 .BR \-d ", " \-\-dict ", " \-\-vortaro "=\fIDICT\fP"
 Specify the dictionary, DICT, which will be opened(See DICTIONARIES section)
@@ -40,11 +41,17 @@ Add H-system entries to dictionary(during rebuild)
 .BR \-m ", " \-\-menu ", " \-\-menuo
 Select dictionary to browse from a menu
 .TP
+.BR \-q ", " \-\-quiet ", " \-\-mallaŭta
+Suppress all messages, except error messages
+.TP
 .BR \-r ", " \-\-rebuild ", " \-\-rekonstrui
 Rebuild dictionary with specified systems
 .TP
 .BR "" "    " \-\-rofi
 Override the default and use rofi instead of dmenu
+.TP
+.BR "" "    " \-\-silent "," \-\-silenta
+Supress all messages
 .TP
 .BR "" "    " \-\-version "," \-\-versio
 Show the version information for dmenu_eo

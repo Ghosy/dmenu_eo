@@ -20,6 +20,8 @@ set -euo pipefail
 x_system=false
 h_system=false
 rebuild=false
+quiet=false
+silent=false
 dmenu=""
 # Get default system languae as default locale setting
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
@@ -60,10 +62,14 @@ print_usage() {
 	echo "      --hsistemo        aldoni H-sistemajn vortarerojn(dum rekonstrui)"
 	echo "  -m, --menu            select dictionary to browse from a menu"
 	echo "      --menuo           elekti vortaron por folii per menuo"
+	echo "  -q, --quiet           suppress all messages, except error messages"
+	echo "      --mallaŭta        kaŝi ĉiujn mesaĝojn, krom eraraj mesaĝoj"
 	echo "  -r, --rebuild         rebuild dictionary with specified systems"
 	echo "      --rekonstrui      rekonstrui vortaron per difinitaj sistemoj"
 	echo "      --rofi            override the default and use rofi instead of dmenu"
 	echo "                        transpasi la defaŭlto kaj uzi rofi anstataŭ dmenu"
+	echo "      --silent          supress all messages"
+	echo "      --silenta         kaŝi ĉiujn mesaĝojn"
 	echo "      --version         show the version information for dmenu_eo"
 	echo "      --versio          elmontri la versia informacio de dmenu_eo"
 	echo "  -x, --xsystem         add X-system entries to dictionary(during rebuild)"
@@ -281,6 +287,9 @@ main() {
 				cmd=$(echo -e "$dmenu -i -l 10 <<< \"$menu_choices\"")
 				get_choice "$(eval "$cmd")"
 				;;
+			-q|--quiet|--mallauxta|--mallauta|--mallaŭta)
+				quiet=true
+				;;
 			-r|--rebuild|--rekonstrui)
 				# rebuild_dictionary
 				rebuild=true
@@ -291,6 +300,9 @@ main() {
 					exit 1
 				fi
 				dmenu="rofi -dmenu"
+				;;
+			--silent|silenta)
+				silent=true
 				;;
 			--version|--versio)
 				print_version
