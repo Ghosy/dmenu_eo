@@ -54,6 +54,8 @@ print_usage() {
 	echo "Options(Agordoj):"
 	echo "  -d, --dict=DICT       the DICT to be browsed(options below)"
 	echo "      --vortaro=DICT    la DICT foliota(elektoj malsupre)"
+	echo "      --en              display all messages in English"
+	echo "                        prezenti ĉiujn mesaĝojn angle"
 	echo "      --eo              display all messages in Esperanto"
 	echo "                        prezenti ĉiujn mesaĝojn Esperante"
 	echo "      --help            display this help message"
@@ -259,7 +261,7 @@ main() {
 
 	# Getopt
 	local short=d:hmqrx
-	local long=dict:,eo,vortaro:,hsystem,hsistemo,menu,menuo,quiet,mallauxta,mallauta,mallaŭta,rebuild,rekonstrui,rofi,silent,silenta,xsystem,xsistemo,help,helpi,version,versio
+	local long=dict:,en,eo,vortaro:,hsystem,hsistemo,menu,menuo,quiet,mallauxta,mallauta,mallaŭta,rebuild,rekonstrui,rofi,silent,silenta,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
 	if [[ $? != 0 ]]; then
@@ -275,6 +277,9 @@ main() {
 			-d|--dict|--vortaro)
 				get_choice "$2"
 				shift
+				;;
+			--en)
+				locale="en"
 				;;
 			--eo)
 				locale="eo"
