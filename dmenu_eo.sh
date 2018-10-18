@@ -323,7 +323,7 @@ main() {
 				;;
 			*)
 				# Unknown option
-				print_err "$2 argument not properly handled." "$2 argumento ne prave uzis."
+				print_err "$1 argument not properly handled." "$1 argumento ne prave uzis."
 				exit 64
 				;;
 		esac
