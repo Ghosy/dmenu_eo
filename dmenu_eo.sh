@@ -105,6 +105,17 @@ print_version() {
 	exit 0
 }
 
+print_std() {
+	if (! $quiet && ! $silent); then
+		# If enough parameters and locale is eo, else use en
+		if [ "$#" -gt "1" ] && [[ "$locale" == "eo" ]]; then
+			echo "$2"
+		else
+			echo "$1"
+		fi
+	fi
+}
+
 print_err() {
 	if (! $silent); then
 		# If enough parameters and locale is eo, else use en
@@ -117,23 +128,38 @@ print_err() {
 }
 
 build_dictionary() {
+	print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 	# Get ESPDIC
 	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
 		exit 1
+	else
+		print_std "  Done" "  Finita"
 	fi
+
+	print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
 	# Get O'Connor/Hayes
 	wget -o /dev/null -O "$oconnor_hayes_cache" $oconnor_hayes_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
 		exit 1
+	else
+		print_std "  Done" "  Finita"
 	fi
+
+	print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
+	# Get Komputeko
 	wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
 		exit 1
+	else
+		print_std "  Done" "  Finita"
 	fi
+
+	print_std "Formatting dictionaries.." "Preparas vortarojn..."
+
 	# Convert DOS newline to Unix
 	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache"
 
@@ -173,6 +199,8 @@ build_dictionary() {
 
 		fi
 	done
+	
+	print_std "  Done" "  Finita"
 }
 
 rebuild_dictionary() {
