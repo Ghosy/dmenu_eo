@@ -25,13 +25,14 @@ silent=false
 dmenu=""
 # Get default system languae as default locale setting
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
-# ESPDIC download location
+
+# Dictionary sources
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
 oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
 komputeko_dl="https://komputeko.net/Komputeko-ENEO.pdf"
 vikipedio_search="https://eo.wikipedia.org/w/api.php?action=opensearch&search="
 
-# cache from dmenu_path
+# Dictionary cache dir
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
 cachedir="$cachedir/dmenu_eo"
 
@@ -128,8 +129,8 @@ print_err() {
 }
 
 build_dictionary() {
-	print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 	# Get ESPDIC
+	print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
@@ -138,8 +139,8 @@ build_dictionary() {
 		print_std "  Done" "  Finita"
 	fi
 
-	print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
 	# Get O'Connor/Hayes
+	print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
 	wget -o /dev/null -O "$oconnor_hayes_cache" $oconnor_hayes_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
@@ -148,8 +149,8 @@ build_dictionary() {
 		print_std "  Done" "  Finita"
 	fi
 
-	print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
 	# Get Komputeko
+	print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
 	wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
@@ -180,23 +181,20 @@ build_dictionary() {
 	sed -ri '/(^\s|^$)/d' "$komputeko_cache"
 	# Clear Header
 	sed -i '/^EN/d' "$komputeko_cache"
-	# Replace first multispace per line with : 
+	# Replace first multispace per line with :
 	sed -ri 's/ {2,}/: /' "$komputeko_cache"
-	# Replace remaining multispace per line with , 
+	# Replace remaining multispace per line with ,
 	sed -ri 's/ {2,}/, /' "$komputeko_cache"
 
 	for dict in "${dicts[@]}"; do
-
 		if ($x_system); then
 			# Add lines using X-system to dictionary
 			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$dict"
-
 		fi
 
 		if ($h_system); then
 			# Add lines using H-system to dictionary
 			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$dict"
-
 		fi
 	done
 	
@@ -219,6 +217,7 @@ check_depends() {
 		print_err "Wget is not installed. Please install wget." "Wget ne estas instalita. Bonvolu instali wget."
 		exit 1
 	fi
+
 	# Check for dmenu or rofi
 	if type dmenu >> /dev/null; then
 		dmenu="dmenu"
@@ -240,7 +239,10 @@ search_vikipedio() {
 	input=$(eval "$cmd")
 	declare -A results
 	IFS=$'\n'
+
+	# Get search results from vikipedio
 	search=$(wget -o /dev/null -O - "$vikipedio_search$input")
+
 	# Get array of search results with corresponding URLs
 	mapfile -t keys < <(jq -r '.[1]|join("\n")' <<< "$search")
 	mapfile -t vals < <(jq -r '.[3]|join("\n")' <<< "$search")
@@ -249,6 +251,7 @@ search_vikipedio() {
 		results["${keys[i]}"]=${vals[i]}
 	done
 
+	# Select link to open
 	cmd="$dmenu -l 10 <<< \"${keys[*]}\""
 	xdg-open "${results[$(eval "$cmd")]}"
 }
@@ -258,6 +261,7 @@ get_choice() {
 		print_err "A dictionary option has already been chosen. Only use one flag of -m or -d." "Elekto de vortaro jam elektis. Nur uzu unu flagon de -m aŭ -d."
 		exit 1
 	fi
+
 	case ${1^^} in
 		ES|ESPDIC)
 			choice="$espdic_cache"
