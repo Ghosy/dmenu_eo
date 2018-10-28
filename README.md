@@ -13,7 +13,7 @@ Demo:
 
 ### Process
 1. Clone or download contents of git repository  
-`git clone https://github.com/Ghosy/Dmenu-EO.git`
+`git clone https://github.com/Ghosy/dmenu_eo.git`
 
 2. Navigate to the cloned repository  
 `cd Dmenu-EO`
@@ -46,7 +46,7 @@ Demonstro:
 
 ### Procedo
 1. Klonu aŭ elŝutu la enhavon de la git deponejo  
-`git clone https://github.com/Ghosy/Dmenu-EO.git`
+`git clone https://github.com/Ghosy/dmenu_eo.git`
 
 2. Iru al la klona deponejo  
 `cd Dmenu-EO`
