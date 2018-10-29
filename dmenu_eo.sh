@@ -19,6 +19,7 @@ set -euo pipefail
 
 x_system=false
 h_system=false
+sub_w=false
 rebuild=false
 quiet=false
 silent=false
@@ -75,6 +76,8 @@ print_usage() {
 	echo "      --silenta         kaŝi ĉiujn mesaĝojn"
 	echo "      --version         show the version information for dmenu_eo"
 	echo "      --versio          elmontri la versia informacio de dmenu_eo"
+	echo "  -w                    use w when building with the X-system instead of ux"
+	echo "                        uzi w anstataŭ ux kiam konstruanta per X-sistemo"
 	echo "  -x, --xsystem         add X-system entries to dictionary(during rebuild)"
 	echo "      --xsistemo        aldoni X-sistemajn vortarerojn(dum rekonstrui)"
 	echo ""
@@ -188,8 +191,13 @@ build_dictionary() {
 
 	for dict in "${dicts[@]}"; do
 		if ($x_system); then
+			if ($sub_w); then
+				u_sub='s/\xc5\xad/w/g; s/\xc5\xac/W/g;'
+			else
+				u_sub=' s/\xc5\xad/ux/g; s/\xc5\xac/UX/g;'
+			fi
 			# Add lines using X-system to dictionary
-			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/cx/g; s/\xc4\x9d/gx/g; s/\xc4\xb5/jx/g; s/\xc4\xa5/hx/g; s/\xc5\xad/ux/g; s/\xc5\x9d/sx/g; s/\xc4\xa4/HX/g; s/\xc4\x88/CX/g; s/\xc4\x9c/GX/g; s/\xc4\xb4/JX/g; s/\xc5\x9c/SX/g; s/\xc5\xac/UX/g;}' "$dict"
+			sed -i -e "/\\xc4\\x89\\|\\xc4\\x9d\\|\\xc4\\xb5\\|\\xc4\\xa5\\|\\xc5\\xad\\|\\xc5\\x9d\\|\\xc4\\xa4\\|\\xc4\\x88\\|\\xc4\\x9c\\|\\xc4\\xb4\\|\\xc5\\x9c\\|\\xc5\\xac/{p; s/\\xc4\\x89/cx/g; s/\\xc4\\x9d/gx/g; s/\\xc4\\xb5/jx/g; s/\\xc4\\xa5/hx/g; s/\\xc5\\x9d/sx/g; s/\\xc4\\x88/CX/g; s/\\xc4\\x9c/GX/g; s/\\xc4\\xa4/HX/g; s/\\xc4\\xb4/JX/g; s/\\xc5\\x9c/SX/g; $u_sub}" "$dict"
 		fi
 
 		if ($h_system); then
@@ -292,7 +300,7 @@ main() {
 	check_depends
 
 	# Getopt
-	local short=d:hmqrx
+	local short=d:hmqrwx
 	local long=dict:,en,eo,vortaro:,hsystem,hsistemo,menu,menuo,quiet,mallauxta,mallauta,mallaŭta,rebuild,rekonstrui,rofi,silent,silenta,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
@@ -345,6 +353,9 @@ main() {
 				;;
 			--version|--versio)
 				print_version
+				;;
+			-w)
+				sub_w=true
 				;;
 			-x|--xsystem|--xsistemo)
 				x_system=true
