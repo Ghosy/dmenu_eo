@@ -144,7 +144,7 @@ build_dictionary() {
 
 	# Get O'Connor/Hayes
 	print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
-	wget -o /dev/null -O "$oconnor_hayes_cache" $oconnor_hayes_dl >> /dev/null
+	wget -o /dev/null -O "$oconnor_hayes_cache.txt" $oconnor_hayes_dl >> /dev/null
 	if [ "$?" -ne 0 ]; then
 		print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
 		exit 1
@@ -165,29 +165,31 @@ build_dictionary() {
 	print_std "Formatting dictionaries.." "Preparas vortarojn..."
 
 	# Convert DOS newline to Unix
-	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache"
+	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache.txt"
 
 	# Clean O'Connor/Hayes preamble
-	sed -i '/= A =/,$!d' "$oconnor_hayes_cache"
+	sed '/= A =/,$!d' "$oconnor_hayes_cache.txt" |
 	# Clean O'Connor/Hayes after dictionary
-	sed -i '/\*/,$d' "$oconnor_hayes_cache"
+	sed '/\*/,$d' |
 	# Clear extra lines
-	sed -i '/^\s*$/d' "$oconnor_hayes_cache"
+	sed '/^\s*$/d' |
 	# Remove extra .'s
-	sed -ri 's/(\.|\. \[.+)$//g' "$oconnor_hayes_cache"
+	sed -r 's/(\.|\. \[.+)$//g' >> "$oconnor_hayes_cache"
+	# Remove temp file
+	rm "$oconnor_hayes_cache.txt"
 
 	# Convert Komputeko to text
-	pdftotext -layout "$komputeko_cache.pdf" "$komputeko_cache"
+	pdftotext -layout "$komputeko_cache.pdf" - |
+	# Clear Formatting lines
+	sed -r '/(^\s|^$)/d' |
+	# Clear Header
+	sed '/^EN/d' |
+	# Replace first multispace per line with :
+	sed -r 's/ {2,}/: /' |
+	# Replace remaining multispace per line with ,
+	sed -r 's/ {2,}/, /' >> "$komputeko_cache"
 	# Remove pdf
 	rm "$komputeko_cache.pdf"
-	# Clear Formatting lines
-	sed -ri '/(^\s|^$)/d' "$komputeko_cache"
-	# Clear Header
-	sed -i '/^EN/d' "$komputeko_cache"
-	# Replace first multispace per line with :
-	sed -ri 's/ {2,}/: /' "$komputeko_cache"
-	# Replace remaining multispace per line with ,
-	sed -ri 's/ {2,}/, /' "$komputeko_cache"
 
 	for dict in "${dicts[@]}"; do
 		if ($x_system); then
