@@ -62,8 +62,8 @@ print_usage() {
 	echo "                        prezenti ĉiujn mesaĝojn Esperante"
 	echo "      --help            display this help message"
 	echo "      --helpi           prezenti ĉi tiun mesaĝon de helpo"
-	echo "  -h, --hsystem         add H-system entries to dictionary(during rebuild)"
-	echo "      --hsistemo        aldoni H-sistemajn vortarerojn(dum rekonstrui)"
+	echo "  -h, --hsystem         add H-system entries to dictionary(during re/build)"
+	echo "      --hsistemo        aldoni H-sistemajn vortarerojn(dum re/konstrui)"
 	echo "  -m, --menu            select dictionary to browse from a menu"
 	echo "      --menuo           elekti vortaron por folii per menuo"
 	echo "  -q, --quiet           suppress all messages, except error messages"
@@ -78,8 +78,8 @@ print_usage() {
 	echo "      --versio          elmontri la versia informacio de dmenu_eo"
 	echo "  -w                    use w when building with the X-system instead of ux"
 	echo "                        uzi w anstataŭ ux kiam konstruanta per X-sistemo"
-	echo "  -x, --xsystem         add X-system entries to dictionary(during rebuild)"
-	echo "      --xsistemo        aldoni X-sistemajn vortarerojn(dum rekonstrui)"
+	echo "  -x, --xsystem         add X-system entries to dictionary(during re/build)"
+	echo "      --xsistemo        aldoni X-sistemajn vortarerojn(dum re/konstrui)"
 	echo ""
 	echo "Dictionaries(Vortaroj):"
 	echo "  ES: ESPDIC"
@@ -381,8 +381,10 @@ main() {
 	# If any dictionaries aren't installed
 	for dict in "${dicts[@]}"; do
 		if [ ! -r "$dict" ]; then
-			# Assume X-system by default
-			x_system=true
+			# Assume X-system by default, unless h-system is set
+			if ! ($h_system); then
+				x_system=true
+			fi
 			build_dictionary
 		fi
 	done
