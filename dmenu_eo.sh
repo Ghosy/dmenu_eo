@@ -40,6 +40,7 @@ cachedir="$cachedir/dmenu_eo"
 # Check cache dir and create if missing
 mkdir -p "$cachedir"
 
+installed_cache=$cachedir/installed
 espdic_cache=$cachedir/espdic
 oconnor_hayes_cache=$cachedir/oconnor_hayes
 komputeko_cache=$cachedir/komputeko
@@ -132,6 +133,7 @@ print_err() {
 }
 
 build_dictionary() {
+	inst_list=()
 	# Get ESPDIC
 	print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
@@ -140,6 +142,7 @@ build_dictionary() {
 		exit 1
 	else
 		print_std "  Done" "  Finita"
+		inst_list+=("es")
 	fi
 
 	# Get O'Connor/Hayes
@@ -150,6 +153,7 @@ build_dictionary() {
 		exit 1
 	else
 		print_std "  Done" "  Finita"
+		inst_list+=("oc")
 	fi
 
 	# Get Komputeko
@@ -160,7 +164,14 @@ build_dictionary() {
 		exit 1
 	else
 		print_std "  Done" "  Finita"
+		inst_list+=("ko")
 	fi
+
+	# Placeholder for dictionary specific build system
+	inst_list+=("vi")
+
+	# Write list of installed dictionaries
+	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
 
 	print_std "Formatting dictionaries.." "Preparas vortarojn..."
 
