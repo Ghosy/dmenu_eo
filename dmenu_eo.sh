@@ -390,15 +390,13 @@ main() {
 		rebuild_dictionary
 	fi
 	# If any dictionaries aren't installed
-	for dict in "${dicts[@]}"; do
-		if [ ! -r "$dict" ]; then
-			# Assume X-system by default, unless h-system is set
-			if ! ($h_system); then
-				x_system=true
-			fi
-			build_dictionary
+	if [[ ! -f $installed_cache || ! -s $installed_cache ]]; then
+		# Assume X-system by default, unless h-system is set
+		if ! ($h_system); then
+			x_system=true
 		fi
-	done
+		build_dictionary
+	fi
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
