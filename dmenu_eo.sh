@@ -389,7 +389,8 @@ main() {
 	if ($rebuild); then
 		rebuild_dictionary
 	fi
-	# If any dictionaries aren't installed
+
+	# If no dictionaries are installed
 	if [[ ! -f $installed_cache || ! -s $installed_cache ]]; then
 		# Assume X-system by default, unless h-system is set
 		if ! ($h_system); then
@@ -400,7 +401,7 @@ main() {
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
-		choice="$espdic_cache"
+		choice=$(head -1 "$installed_cache")
 	fi
 	# Display dictionary
 	cmd="$dmenu -l 10 < \"$choice\" >> /dev/null"
