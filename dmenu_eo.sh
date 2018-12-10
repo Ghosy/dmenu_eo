@@ -20,6 +20,7 @@ set -euo pipefail
 x_system=false
 h_system=false
 sub_w=false
+menu=false
 rebuild=false
 quiet=false
 silent=false
@@ -308,6 +309,12 @@ get_choice() {
 	esac
 }
 
+menu() {
+	# Open select menu
+	cmd=$(echo -e "$dmenu -i -l 10 < \"$installed_cache\"")
+	get_choice "$(eval "$cmd")"
+}
+
 main() {
 	check_depends
 
@@ -343,8 +350,7 @@ main() {
 				h_system=true
 				;;
 			-m|--menu|--menuo)
-				cmd=$(echo -e "$dmenu -i -l 10 < \"$installed_cache\"")
-				get_choice "$(eval "$cmd")"
+				menu=true
 				;;
 			-q|--quiet|--mallauxta|--mallauta|--mallaŭta)
 				quiet=true
@@ -387,6 +393,10 @@ main() {
 
 	if ($rebuild); then
 		rebuild_dictionary
+	fi
+
+	if ($menu); then
+		menu
 	fi
 
 	# If no dictionaries are installed
