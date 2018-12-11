@@ -174,7 +174,11 @@ build_dictionary() {
 	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
 
 	print_std "Formatting dictionaries.." "Preparas vortarojn..."
+	format_dictionaries
+	print_std "  Done" "  Finita"
+}
 
+format_dictionaries() {
 	# Convert DOS newline to Unix
 	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache.txt"
 
@@ -218,8 +222,6 @@ build_dictionary() {
 			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$dict"
 		fi
 	done
-
-	print_std "  Done" "  Finita"
 }
 
 rebuild_dictionary() {
