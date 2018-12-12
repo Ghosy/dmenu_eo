@@ -27,7 +27,7 @@ silent=false
 dmenu=""
 # Get default system languae as default locale setting
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
-build_dicts="eo,oc,ko,vi"
+build_dicts="es,oc,ko,vi"
 
 # Dictionary sources
 espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
@@ -134,41 +134,49 @@ print_err() {
 
 build_dictionary() {
 	inst_list=()
-	# Get ESPDIC
-	print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
-	wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
-	if [ "$?" -ne 0 ]; then
-		print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
-		exit 1
-	else
-		print_std "  Done" "  Finita"
-		inst_list+=("ESPDIC")
+	if [[ $build_dicts =~ es ]]; then
+		# Get ESPDIC
+		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
+		wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
+		if [ "$?" -ne 0 ]; then
+			print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
+			exit 1
+		else
+			print_std "  Done" "  Finita"
+			inst_list+=("ESPDIC")
+		fi
 	fi
 
-	# Get O'Connor/Hayes
-	print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
-	wget -o /dev/null -O "$oconnor_hayes_cache.txt" $oconnor_hayes_dl >> /dev/null
-	if [ "$?" -ne 0 ]; then
-		print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
-		exit 1
-	else
-		print_std "  Done" "  Finita"
-		inst_list+=("O'Connor and Hayes")
+	if [[ $build_dicts =~ oc ]]; then
+		# Get O'Connor/Hayes
+		print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
+		wget -o /dev/null -O "$oconnor_hayes_cache.txt" $oconnor_hayes_dl >> /dev/null
+		if [ "$?" -ne 0 ]; then
+			print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
+			exit 1
+		else
+			print_std "  Done" "  Finita"
+			inst_list+=("O'Connor and Hayes")
+		fi
 	fi
 
-	# Get Komputeko
-	print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
-	wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
-	if [ "$?" -ne 0 ]; then
-		print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
-		exit 1
-	else
-		print_std "  Done" "  Finita"
-		inst_list+=("Komputeko")
+	if [[ $build_dicts =~ ko ]]; then
+		# Get Komputeko
+		print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
+		wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
+		if [ "$?" -ne 0 ]; then
+			print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
+			exit 1
+		else
+			print_std "  Done" "  Finita"
+			inst_list+=("Komputeko")
+		fi
 	fi
 
-	# Placeholder for dictionary specific build system
-	inst_list+=("Vikipedio")
+	if [[ $build_dicts =~ vi ]]; then
+		# Placeholder for dictionary specific build system
+		inst_list+=("Vikipedio")
+	fi
 
 	# Write list of installed dictionaries
 	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
@@ -179,32 +187,39 @@ build_dictionary() {
 }
 
 format_dictionaries() {
-	# Convert DOS newline to Unix
-	sed -i 's/.$//' "$espdic_cache" "$oconnor_hayes_cache.txt"
+	if [[ $build_dicts =~ es ]]; then
+		# Convert DOS newline to Unix
+		sed -i 's/.$//' "$espdic_cache"
+	fi
 
-	# Clean O'Connor/Hayes preamble
-	sed '/= A =/,$!d' "$oconnor_hayes_cache.txt" |
-	# Clean O'Connor/Hayes after dictionary
-	sed '/\*/,$d' |
-	# Clear extra lines
-	sed '/^\s*$/d' |
-	# Remove extra .'s
-	sed -r 's/(\.|\. \[.+)$//g' >> "$oconnor_hayes_cache"
-	# Remove temp file
-	rm "$oconnor_hayes_cache.txt"
+	if [[ $build_dicts =~ oc ]]; then
+		sed 's/.$//' "$oconnor_hayes_cache.txt" |
+		# Clean O'Connor/Hayes preamble
+		sed '/= A =/,$!d' |
+		# Clean O'Connor/Hayes after dictionary
+		sed '/\*/,$d' |
+		# Clear extra lines
+		sed '/^\s*$/d' |
+		# Remove extra .'s
+		sed -r 's/(\.|\. \[.+)$//g' >> "$oconnor_hayes_cache"
+		# Remove temp file
+		rm "$oconnor_hayes_cache.txt"
+	fi
 
-	# Convert Komputeko to text
-	pdftotext -layout "$komputeko_cache.pdf" - |
-	# Clear Formatting lines
-	sed -r '/(^\s|^$)/d' |
-	# Clear Header
-	sed '/^EN/d' |
-	# Replace first multispace per line with :
-	sed -r 's/ {2,}/: /' |
-	# Replace remaining multispace per line with ,
-	sed -r 's/ {2,}/, /' >> "$komputeko_cache"
-	# Remove pdf
-	rm "$komputeko_cache.pdf"
+	if [[ $build_dicts =~ ko ]]; then
+		# Convert Komputeko to text
+		pdftotext -layout "$komputeko_cache.pdf" - |
+		# Clear Formatting lines
+		sed -r '/(^\s|^$)/d' |
+		# Clear Header
+		sed '/^EN/d' |
+		# Replace first multispace per line with :
+		sed -r 's/ {2,}/: /' |
+		# Replace remaining multispace per line with ,
+		sed -r 's/ {2,}/, /' >> "$komputeko_cache"
+		# Remove pdf
+		rm "$komputeko_cache.pdf"
+	fi
 
 	for dict in "${dicts[@]}"; do
 		if ($x_system); then
