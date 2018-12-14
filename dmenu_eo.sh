@@ -212,11 +212,13 @@ format_dictionaries() {
 		# Clear Formatting lines
 		sed -r '/(^\s|^$)/d' |
 		# Clear Header
-		sed '/^EN/d' |
+		sed '/^speco/d' |
+		# Remove part of speech definitions
+		sed -r 's/^[a-z] {2,}//' |
 		# Replace first multispace per line with :
 		sed -r 's/ {2,}/: /' |
 		# Replace remaining multispace per line with ,
-		sed -r 's/ {2,}/, /' >> "$komputeko_cache"
+		sed -r 's/ {2,}/, /g' >> "$komputeko_cache"
 		# Remove pdf
 		rm "$komputeko_cache.pdf"
 	fi
