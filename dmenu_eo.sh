@@ -224,6 +224,10 @@ format_dictionaries() {
 	fi
 
 	for dict in "${dicts[@]}"; do
+		# Skip dict if not installed
+		if [[ ! -f $dict ]]; then
+			continue
+		fi
 		if ($x_system); then
 			if ($sub_w); then
 				u_sub='s/\xc5\xad/w/g; s/\xc5\xac/W/g;'
