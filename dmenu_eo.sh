@@ -190,7 +190,9 @@ format_dictionaries() {
 	if [[ $build_dicts =~ es ]]; then
 		# Convert DOS newline to Unix
 		sed 's/.$//' "$espdic_cache.txt" |
+		# Remove header
 		sed '/ESPDIC/d' >> "$espdic_cache"
+		# Remove temp file
 		rm "$espdic_cache.txt"
 	fi
 
