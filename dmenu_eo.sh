@@ -137,7 +137,7 @@ build_dictionary() {
 	if [[ $build_dicts =~ es ]]; then
 		# Get ESPDIC
 		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
-		wget -o /dev/null -O "$espdic_cache" $espdic_dl >> /dev/null
+		wget -o /dev/null -O "$espdic_cache.txt" $espdic_dl >> /dev/null
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
 			exit 1
@@ -189,7 +189,9 @@ build_dictionary() {
 format_dictionaries() {
 	if [[ $build_dicts =~ es ]]; then
 		# Convert DOS newline to Unix
-		sed -i 's/.$//' "$espdic_cache"
+		sed 's/.$//' "$espdic_cache.txt" |
+		sed '/ESPDIC/d' >> "$espdic_cache"
+		rm "$espdic_cache.txt"
 	fi
 
 	if [[ $build_dicts =~ oc ]]; then
