@@ -305,7 +305,7 @@ search_vikipedio() {
 }
 
 get_choice() {
-	if [ ! -z "$choice" ]; then
+	if [ -n "$choice" ]; then
 		print_err "A dictionary option has already been chosen. Only use one flag of -m or -d." "Elekto de vortaro jam elektis. Nur uzu unu flagon de -m aŭ -d."
 		exit 1
 	fi
