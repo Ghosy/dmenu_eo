@@ -138,6 +138,7 @@ build_dictionary() {
 		# Get ESPDIC
 		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 		wget -o /dev/null -O "$espdic_cache.txt" $espdic_dl >> /dev/null
+		# shellcheck disable=SC2181
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
 			exit 1
@@ -151,6 +152,7 @@ build_dictionary() {
 		# Get O'Connor/Hayes
 		print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
 		wget -o /dev/null -O "$oconnor_hayes_cache.txt" $oconnor_hayes_dl >> /dev/null
+		# shellcheck disable=SC2181
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
 			exit 1
@@ -164,6 +166,7 @@ build_dictionary() {
 		# Get Komputeko
 		print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
 		wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
+		# shellcheck disable=SC2181
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
 			exit 1
@@ -350,6 +353,7 @@ main() {
 	local long=dict:,en,eo,vortaro:,hsystem,hsistemo,menu,menuo,quiet,mallauxta,mallauta,mallaŭta,rebuild,rekonstrui,rofi,silent,silenta,xsystem,xsistemo,help,helpi,version,versio
 
 	parsed=$(getopt --options $short --longoptions $long --name "$0" -- "$@")
+	# shellcheck disable=SC2181
 	if [[ $? != 0 ]]; then
 		# Getopt not getting arguments correctly
 		exit 2
