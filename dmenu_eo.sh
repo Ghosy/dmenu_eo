@@ -387,7 +387,6 @@ main() {
 				quiet=true
 				;;
 			-r|--rebuild|--rekonstrui)
-				# rebuild_dictionary
 				rebuild=true
 				;;
 			--rofi)
