@@ -32,7 +32,7 @@ This project is licensed under the GNU General Public License version 3(GPLv3) -
 
 
 # Dmenu_EO
-Ilo, kiu donas facilan rapidan metodon por folii Esperanto-La Angla vortarojn kaj serĉi Vikipedion. Dmenu_eo subtenas ambaŭ la X-sistemon kaj la H-sistemon.
+Ilo, kiu donas facilan rapidan metodon por foliumi Esperanto-La Angla vortarojn kaj serĉi Vikipedion. Dmenu_eo subtenas ambaŭ la X-sistemon kaj la H-sistemon.
 
 Demonstro:
 ![Dmenu_EO Demo](https://cloud.githubusercontent.com/assets/2915820/24157591/2c037cc8-0e30-11e7-8438-11ae21051f94.gif)
