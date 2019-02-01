@@ -262,6 +262,43 @@ rebuild_dictionary() {
 	exit 0
 }
 
+check_dictionary() {
+	while read -r dict; do
+		case ${dict^^} in
+			ES|ESPDIC)
+				if [[ ! -f $espdic_cache || ! -s $espdic_cache ]]; then
+					build_dicts+="es,"
+				fi
+				;;
+			OC|O\'CONNOR\ AND\ HAYES)
+				if [[ ! -f $oconnor_hayes_cache || ! -s $oconnor_hayes_cache ]]; then
+					build_dicts+="oc,"
+				fi
+				;;
+			KO|KOMPUTEKO)
+				if [[ ! -f $komputeko_cache || ! -s $komputeko_cache ]]; then
+					build_dicts+="ko,"
+				fi
+				;;
+			VI|VIKIPEDIO)
+					if [ -z "$build_dicts" ]; then
+						build_dicts+="vi,"
+					fi
+				;;
+			"")
+				;;
+			*)
+				print_err "$dict is not a valid option for a dictionary." "$dict ne estas valida elekto por vortaro."
+				exit 1;
+				;;
+		esac
+	done < "$installed_cache"
+	if [ -n "$build_dicts" ]; then
+		build_dicts=${build_dicts%,}
+		# build_dictionary
+	fi
+}
+
 check_depends() {
 	# Check for wget
 	if ! type wget >> /dev/null; then
@@ -437,6 +474,8 @@ main() {
 		fi
 		build_dictionary
 	fi
+
+	check_dictionary
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
