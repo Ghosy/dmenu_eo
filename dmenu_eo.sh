@@ -132,9 +132,25 @@ print_err() {
 	fi
 }
 
-build_dictionary() {
+build_dictionaries() {
 	inst_list=()
-	if [[ $build_dicts =~ es ]]; then
+
+	IFS=","
+	for dict in $build_dicts; do
+		build_dictionary $dict
+		inst_list+=("$dict")
+	done
+
+	# Write list of installed dictionaries
+	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
+
+	print_std "Formatting dictionaries.." "Preparas vortarojn..."
+	format_dictionaries
+	print_std "  Done" "  Finita"
+}
+
+build_dictionary() {
+	if [[ "$1" == "es" ]]; then
 		# Get ESPDIC
 		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 		wget -o /dev/null -O "$espdic_cache.txt" $espdic_dl >> /dev/null
@@ -144,11 +160,10 @@ build_dictionary() {
 			exit 1
 		else
 			print_std "  Done" "  Finita"
-			inst_list+=("ESPDIC")
 		fi
 	fi
 
-	if [[ $build_dicts =~ oc ]]; then
+	if [[ $1 == "oc" ]]; then
 		# Get O'Connor/Hayes
 		print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
 		wget -o /dev/null -O "$oconnor_hayes_cache.txt" $oconnor_hayes_dl >> /dev/null
@@ -158,11 +173,10 @@ build_dictionary() {
 			exit 1
 		else
 			print_std "  Done" "  Finita"
-			inst_list+=("O'Connor and Hayes")
 		fi
 	fi
 
-	if [[ $build_dicts =~ ko ]]; then
+	if [[ $1 == "ko" ]]; then
 		# Get Komputeko
 		print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
 		wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
@@ -172,21 +186,12 @@ build_dictionary() {
 			exit 1
 		else
 			print_std "  Done" "  Finita"
-			inst_list+=("Komputeko")
 		fi
 	fi
 
-	if [[ $build_dicts =~ vi ]]; then
+	# if [[ $1 == "vi" ]]; then
 		# Placeholder for dictionary specific build system
-		inst_list+=("Vikipedio")
-	fi
-
-	# Write list of installed dictionaries
-	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
-
-	print_std "Formatting dictionaries.." "Preparas vortarojn..."
-	format_dictionaries
-	print_std "  Done" "  Finita"
+	# fi
 }
 
 format_dictionaries() {
@@ -258,7 +263,7 @@ rebuild_dictionary() {
 		rm -f "$dict"
 	done
 	# Build dictionary
-	build_dictionary
+	build_dictionaies
 	exit 0
 }
 
@@ -472,7 +477,7 @@ main() {
 		if ! ($h_system); then
 			x_system=true
 		fi
-		build_dictionary
+		build_dictionaries
 	fi
 
 	check_dictionary
