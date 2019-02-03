@@ -137,20 +137,20 @@ build_dictionaries() {
 
 	IFS=","
 	for dict in $build_dicts; do
-		build_dictionary $dict
+		build_dictionary "$dict"
 		inst_list+=("$dict")
 	done
 
 	# Write list of installed dictionaries
 	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
 
-	print_std "Formatting dictionaries.." "Preparas vortarojn..."
-	format_dictionaries
-	print_std "  Done" "  Finita"
+	# print_std "Formatting dictionaries.." "Preparas vortarojn..."
+	# format_dictionaries
+	# print_std "  Done" "  Finita"
 }
 
 build_dictionary() {
-	if [[ "$1" == "es" ]]; then
+	if [[ $1 == "es" ]]; then
 		# Get ESPDIC
 		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
 		wget -o /dev/null -O "$espdic_cache.txt" $espdic_dl >> /dev/null
@@ -192,19 +192,21 @@ build_dictionary() {
 	# if [[ $1 == "vi" ]]; then
 		# Placeholder for dictionary specific build system
 	# fi
+	format_dictionary "$1"
 }
 
-format_dictionaries() {
-	if [[ $build_dicts =~ es ]]; then
+format_dictionary() {
+	if [[ $1 == "es" ]]; then
 		# Convert DOS newline to Unix
 		sed 's/.$//' "$espdic_cache.txt" |
 		# Remove header
 		sed '/ESPDIC/d' >> "$espdic_cache"
 		# Remove temp file
 		rm "$espdic_cache.txt"
+		format_hat_system "$espdic_cache"
 	fi
 
-	if [[ $build_dicts =~ oc ]]; then
+	if [[ $1 == "oc" ]]; then
 		sed 's/.$//' "$oconnor_hayes_cache.txt" |
 		# Clean O'Connor/Hayes preamble
 		sed '/= A =/,$!d' |
@@ -216,9 +218,10 @@ format_dictionaries() {
 		sed -r 's/(\.|\. \[.+)$//g' >> "$oconnor_hayes_cache"
 		# Remove temp file
 		rm "$oconnor_hayes_cache.txt"
+		format_hat_system "$oconnor_hayes_cache"
 	fi
 
-	if [[ $build_dicts =~ ko ]]; then
+	if [[ $1 == "ko" ]]; then
 		# Convert Komputeko to text
 		pdftotext -layout "$komputeko_cache.pdf" - |
 		# Clear Formatting lines
@@ -233,28 +236,25 @@ format_dictionaries() {
 		sed -r 's/ {2,}/, /g' >> "$komputeko_cache"
 		# Remove pdf
 		rm "$komputeko_cache.pdf"
+		format_hat_system "$komputeko_cache"
+	fi
+}
+
+format_hat_system() {
+	if ($x_system); then
+		if ($sub_w); then
+			u_sub='s/\xc5\xad/w/g; s/\xc5\xac/W/g;'
+		else
+			u_sub=' s/\xc5\xad/ux/g; s/\xc5\xac/UX/g;'
+		fi
+		# Add lines using X-system to dictionary
+		sed -i -e "/\\xc4\\x89\\|\\xc4\\x9d\\|\\xc4\\xb5\\|\\xc4\\xa5\\|\\xc5\\xad\\|\\xc5\\x9d\\|\\xc4\\xa4\\|\\xc4\\x88\\|\\xc4\\x9c\\|\\xc4\\xb4\\|\\xc5\\x9c\\|\\xc5\\xac/{p; s/\\xc4\\x89/cx/g; s/\\xc4\\x9d/gx/g; s/\\xc4\\xb5/jx/g; s/\\xc4\\xa5/hx/g; s/\\xc5\\x9d/sx/g; s/\\xc4\\x88/CX/g; s/\\xc4\\x9c/GX/g; s/\\xc4\\xa4/HX/g; s/\\xc4\\xb4/JX/g; s/\\xc5\\x9c/SX/g; $u_sub}" "$1"
 	fi
 
-	for dict in "${dicts[@]}"; do
-		# Skip dict if not installed
-		if [[ ! -f $dict ]]; then
-			continue
-		fi
-		if ($x_system); then
-			if ($sub_w); then
-				u_sub='s/\xc5\xad/w/g; s/\xc5\xac/W/g;'
-			else
-				u_sub=' s/\xc5\xad/ux/g; s/\xc5\xac/UX/g;'
-			fi
-			# Add lines using X-system to dictionary
-			sed -i -e "/\\xc4\\x89\\|\\xc4\\x9d\\|\\xc4\\xb5\\|\\xc4\\xa5\\|\\xc5\\xad\\|\\xc5\\x9d\\|\\xc4\\xa4\\|\\xc4\\x88\\|\\xc4\\x9c\\|\\xc4\\xb4\\|\\xc5\\x9c\\|\\xc5\\xac/{p; s/\\xc4\\x89/cx/g; s/\\xc4\\x9d/gx/g; s/\\xc4\\xb5/jx/g; s/\\xc4\\xa5/hx/g; s/\\xc5\\x9d/sx/g; s/\\xc4\\x88/CX/g; s/\\xc4\\x9c/GX/g; s/\\xc4\\xa4/HX/g; s/\\xc4\\xb4/JX/g; s/\\xc5\\x9c/SX/g; $u_sub}" "$dict"
-		fi
-
-		if ($h_system); then
-			# Add lines using H-system to dictionary
-			sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$dict"
-		fi
-	done
+	if ($h_system); then
+		# Add lines using H-system to dictionary
+		sed -i -e '/\xc4\x89\|\xc4\x9d\|\xc4\xb5\|\xc4\xa5\|\xc5\xad\|\xc5\x9d\|\xc4\xa4\|\xc4\x88\|\xc4\x9c\|\xc4\xb4\|\xc5\x9c\|\xc5\xac/{p; s/\xc4\x89/ch/g; s/\xc4\x9d/gh/g; s/\xc4\xb5/jh/g; s/\xc4\xa5/hh/g; s/\xc5\xad/u/g; s/\xc5\x9d/sh/g; s/\xc4\xa4/Hh/g; s/\xc4\x88/Ch/g; s/\xc4\x9c/Gh/g; s/\xc4\xb4/Jh/g; s/\xc5\x9c/Sh/g; s/\xc5\xac/U/g;}' "$1"
+	fi
 }
 
 rebuild_dictionary() {
@@ -480,7 +480,7 @@ main() {
 		build_dictionaries
 	fi
 
-	check_dictionary
+	# check_dictionary
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
