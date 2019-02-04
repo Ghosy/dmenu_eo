@@ -272,23 +272,20 @@ check_dictionary() {
 		case ${dict^^} in
 			ES|ESPDIC)
 				if [[ ! -f $espdic_cache || ! -s $espdic_cache ]]; then
-					build_dicts+="es,"
+					build_dictionary "es"
 				fi
 				;;
 			OC|O\'CONNOR\ AND\ HAYES)
 				if [[ ! -f $oconnor_hayes_cache || ! -s $oconnor_hayes_cache ]]; then
-					build_dicts+="oc,"
+					build_dictionary "oc"
 				fi
 				;;
 			KO|KOMPUTEKO)
 				if [[ ! -f $komputeko_cache || ! -s $komputeko_cache ]]; then
-					build_dicts+="ko,"
+					build_dictionary "ko"
 				fi
 				;;
 			VI|VIKIPEDIO)
-					if [ -z "$build_dicts" ]; then
-						build_dicts+="vi,"
-					fi
 				;;
 			"")
 				;;
@@ -298,10 +295,6 @@ check_dictionary() {
 				;;
 		esac
 	done < "$installed_cache"
-	if [ -n "$build_dicts" ]; then
-		build_dicts=${build_dicts%,}
-		# build_dictionary
-	fi
 }
 
 check_depends() {
@@ -480,7 +473,7 @@ main() {
 		build_dictionaries
 	fi
 
-	# check_dictionary
+	check_dictionary
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
