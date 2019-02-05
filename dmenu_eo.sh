@@ -29,12 +29,6 @@ dmenu=""
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
 build_dicts="es,oc,ko,vi"
 
-# Dictionary sources
-espdic_dl="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
-oconnor_hayes_dl="http://www.gutenberg.org/files/16967/16967-0.txt"
-komputeko_dl="https://komputeko.net/Komputeko-ENEO.pdf"
-vikipedio_search="https://eo.wikipedia.org/w/api.php?action=opensearch&search="
-
 # Dictionary cache dir
 cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
 cachedir="$cachedir/dmenu_eo"
@@ -43,11 +37,26 @@ cachedir="$cachedir/dmenu_eo"
 mkdir -p "$cachedir"
 
 installed_cache=$cachedir/installed
-espdic_cache=$cachedir/espdic
-oconnor_hayes_cache=$cachedir/oconnor_hayes
-komputeko_cache=$cachedir/komputeko
 
-dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
+declare -A dictnames dictcache sources
+# Dictionary names
+dictnames["es"]="ESPDIC"
+dictnames["oc"]="O'Connor And Hayes"
+dictnames["ko"]="Komputeko"
+dictnames["vi"]="Vikipedio"
+
+dictcache["es"]="$cachedir/espdic"
+dictcache["oc"]="$cachedir/oconnor_hayes"
+dictcache["ko"]="$cachedir/komputeko"
+
+# Dictionary sources
+sources["es"]="http://www.denisowski.org/Esperanto/ESPDIC/espdic.txt"
+sources["oc"]="http://www.gutenberg.org/files/16967/16967-0.txt"
+sources["ko"]="https://komputeko.net/Komputeko-ENEO.pdf"
+
+vikipedio_search="https://eo.wikipedia.org/w/api.php?action=opensearch&search="
+
+# dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
 
 # Set default dictionary
 choice=""
@@ -153,7 +162,7 @@ build_dictionary() {
 	if [[ $1 == "es" ]]; then
 		# Get ESPDIC
 		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
-		wget -o /dev/null -O "$espdic_cache.txt" $espdic_dl >> /dev/null
+		wget -o /dev/null -O "${dictcache["es"]}.txt" ${sources["es"]} >> /dev/null
 		# shellcheck disable=SC2181
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
@@ -166,7 +175,7 @@ build_dictionary() {
 	if [[ $1 == "oc" ]]; then
 		# Get O'Connor/Hayes
 		print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
-		wget -o /dev/null -O "$oconnor_hayes_cache.txt" $oconnor_hayes_dl >> /dev/null
+		wget -o /dev/null -O "${dictcache["oc"]}.txt" ${sources["oc"]} >> /dev/null
 		# shellcheck disable=SC2181
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
@@ -179,7 +188,7 @@ build_dictionary() {
 	if [[ $1 == "ko" ]]; then
 		# Get Komputeko
 		print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
-		wget -o /dev/null -O "$komputeko_cache.pdf" $komputeko_dl >> /dev/null
+		wget -o /dev/null -O "${dictcache["ko"]}.pdf" ${sources["ko"]} >> /dev/null
 		# shellcheck disable=SC2181
 		if [ "$?" -ne 0 ]; then
 			print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
@@ -198,16 +207,16 @@ build_dictionary() {
 format_dictionary() {
 	if [[ $1 == "es" ]]; then
 		# Convert DOS newline to Unix
-		sed 's/.$//' "$espdic_cache.txt" |
+		sed 's/.$//' "${dictcache["es"]}.txt" |
 		# Remove header
-		sed '/ESPDIC/d' >> "$espdic_cache"
+		sed '/ESPDIC/d' >> "${dictcache["es"]}"
 		# Remove temp file
-		rm "$espdic_cache.txt"
-		format_hat_system "$espdic_cache"
+		rm "${dictcache["es"]}.txt"
+		format_hat_system "${dictcache["es"]}"
 	fi
 
 	if [[ $1 == "oc" ]]; then
-		sed 's/.$//' "$oconnor_hayes_cache.txt" |
+		sed 's/.$//' "${dictcache["oc"]}.txt" |
 		# Clean O'Connor/Hayes preamble
 		sed '/= A =/,$!d' |
 		# Clean O'Connor/Hayes after dictionary
@@ -215,15 +224,15 @@ format_dictionary() {
 		# Clear extra lines
 		sed '/^\s*$/d' |
 		# Remove extra .'s
-		sed -r 's/(\.|\. \[.+)$//g' >> "$oconnor_hayes_cache"
+		sed -r 's/(\.|\. \[.+)$//g' >> "${dictcache["oc"]}"
 		# Remove temp file
-		rm "$oconnor_hayes_cache.txt"
-		format_hat_system "$oconnor_hayes_cache"
+		rm "${dictcache["oc"]}.txt"
+		format_hat_system "${dictcache["oc"]}"
 	fi
 
 	if [[ $1 == "ko" ]]; then
 		# Convert Komputeko to text
-		pdftotext -layout "$komputeko_cache.pdf" - |
+		pdftotext -layout "${dictcache["ko"]}.pdf" - |
 		# Clear Formatting lines
 		sed -r '/(^\s|^$)/d' |
 		# Clear Header
@@ -233,10 +242,10 @@ format_dictionary() {
 		# Replace first multispace per line with :
 		sed -r 's/ {2,}/: /' |
 		# Replace remaining multispace per line with ,
-		sed -r 's/ {2,}/, /g' >> "$komputeko_cache"
+		sed -r 's/ {2,}/, /g' >> "${dictcache["ko"]}"
 		# Remove pdf
-		rm "$komputeko_cache.pdf"
-		format_hat_system "$komputeko_cache"
+		rm "${dictcache["ko"]}.pdf"
+		format_hat_system "${dictcache["ko"]}"
 	fi
 }
 
@@ -259,7 +268,7 @@ format_hat_system() {
 
 rebuild_dictionary() {
 	# Remove old dictionaries
-	for dict in ${dicts[*]}; do
+	for dict in ${dictcache[*]}; do
 		rm -f "$dict"
 	done
 	# Build dictionary
@@ -271,17 +280,17 @@ check_dictionary() {
 	while read -r dict; do
 		case ${dict^^} in
 			ES|ESPDIC)
-				if [[ ! -f $espdic_cache || ! -s $espdic_cache ]]; then
+				if [[ ! -f ${dictcache["es"]} || ! -s ${dictcache["es"]} ]]; then
 					build_dictionary "es"
 				fi
 				;;
 			OC|O\'CONNOR\ AND\ HAYES)
-				if [[ ! -f $oconnor_hayes_cache || ! -s $oconnor_hayes_cache ]]; then
+				if [[ ! -f ${dictcache["oc"]} || ! -s ${dictcache["oc"]} ]]; then
 					build_dictionary "oc"
 				fi
 				;;
 			KO|KOMPUTEKO)
-				if [[ ! -f $komputeko_cache || ! -s $komputeko_cache ]]; then
+				if [[ ! -f ${dictcache["ko"]} || ! -s ${dictcache["ko"]} ]]; then
 					build_dictionary "ko"
 				fi
 				;;
@@ -350,13 +359,13 @@ get_choice() {
 
 	case ${1^^} in
 		ES|ESPDIC)
-			choice="$espdic_cache"
+			choice="${dictcache["es"]}"
 			;;
 		OC|O\'CONNOR\ AND\ HAYES)
-			choice="$oconnor_hayes_cache"
+			choice="${dictcache["oc"]}"
 			;;
 		KO|KOMPUTEKO)
-			choice="$komputeko_cache"
+			choice="${dictcache["ko"]}"
 			;;
 		VI|VIKIPEDIO)
 			search_vikipedio
