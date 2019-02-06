@@ -56,8 +56,6 @@ sources["ko"]="https://komputeko.net/Komputeko-ENEO.pdf"
 
 vikipedio_search="https://eo.wikipedia.org/w/api.php?action=opensearch&search="
 
-# dicts=("$espdic_cache" "$oconnor_hayes_cache" "$komputeko_cache")
-
 # Set default dictionary
 choice=""
 
@@ -160,42 +158,15 @@ build_dictionaries() {
 
 build_dictionary() {
 	if [[ $1 == "es" ]]; then
-		# Get ESPDIC
-		print_std "Downloading ESPDIC..." "Elŝutas ESPDIC..."
-		wget -o /dev/null -O "${dictcache["es"]}.txt" ${sources["es"]} >> /dev/null
-		# shellcheck disable=SC2181
-		if [ "$?" -ne 0 ]; then
-			print_err "Wget of ESPDIC failed." "Wget de ESPDIC paneis."
-			exit 1
-		else
-			print_std "  Done" "  Finita"
-		fi
+		download_dictionary "es"
 	fi
 
 	if [[ $1 == "oc" ]]; then
-		# Get O'Connor/Hayes
-		print_std "Downloading O'Connor/Hayes dictionary..." "Elŝutas O'Connor/Hayes vortaron..."
-		wget -o /dev/null -O "${dictcache["oc"]}.txt" ${sources["oc"]} >> /dev/null
-		# shellcheck disable=SC2181
-		if [ "$?" -ne 0 ]; then
-			print_err "Wget of O'Connor and Hayes dictionary failed." "Wget de O'Connor kaj Hayes vortaro paneis."
-			exit 1
-		else
-			print_std "  Done" "  Finita"
-		fi
+		download_dictionary "oc"
 	fi
 
 	if [[ $1 == "ko" ]]; then
-		# Get Komputeko
-		print_std "Downloading Komputeko..." "Elŝutas Komputekon..."
-		wget -o /dev/null -O "${dictcache["ko"]}.pdf" ${sources["ko"]} >> /dev/null
-		# shellcheck disable=SC2181
-		if [ "$?" -ne 0 ]; then
-			print_err "Wget of Komputeko failed." "Wget de Komputeko paneis."
-			exit 1
-		else
-			print_std "  Done" "  Finita"
-		fi
+		download_dictionary "ko"
 	fi
 
 	# if [[ $1 == "vi" ]]; then
@@ -204,19 +175,31 @@ build_dictionary() {
 	format_dictionary "$1"
 }
 
+download_dictionary() {
+	print_std "Downloading ${dictnames["$1"]}..." "Elŝutas ${dictnames["$1"]}..."
+	wget -o /dev/null -O "${dictcache["$1"]}_pre" ${sources["$1"]} >> /dev/null
+	# shellcheck disable=SC2181
+	if [ "$?" -ne 0 ]; then
+		print_err "Wget of ${dictnames["$1"]} failed." "Wget de ${dictnames["$1"]} paneis."
+		exit 1
+	else
+		print_std "  Done" "  Finita"
+	fi
+}
+
 format_dictionary() {
 	if [[ $1 == "es" ]]; then
 		# Convert DOS newline to Unix
-		sed 's/.$//' "${dictcache["es"]}.txt" |
+		sed 's/.$//' "${dictcache["es"]}_pre" |
 		# Remove header
 		sed '/ESPDIC/d' >> "${dictcache["es"]}"
 		# Remove temp file
-		rm "${dictcache["es"]}.txt"
+		rm "${dictcache["es"]}_pre"
 		format_hat_system "${dictcache["es"]}"
 	fi
 
 	if [[ $1 == "oc" ]]; then
-		sed 's/.$//' "${dictcache["oc"]}.txt" |
+		sed 's/.$//' "${dictcache["oc"]}_pre" |
 		# Clean O'Connor/Hayes preamble
 		sed '/= A =/,$!d' |
 		# Clean O'Connor/Hayes after dictionary
@@ -226,13 +209,13 @@ format_dictionary() {
 		# Remove extra .'s
 		sed -r 's/(\.|\. \[.+)$//g' >> "${dictcache["oc"]}"
 		# Remove temp file
-		rm "${dictcache["oc"]}.txt"
+		rm "${dictcache["oc"]}_pre"
 		format_hat_system "${dictcache["oc"]}"
 	fi
 
 	if [[ $1 == "ko" ]]; then
 		# Convert Komputeko to text
-		pdftotext -layout "${dictcache["ko"]}.pdf" - |
+		pdftotext -layout "${dictcache["ko"]}_pre" - |
 		# Clear Formatting lines
 		sed -r '/(^\s|^$)/d' |
 		# Clear Header
@@ -244,7 +227,7 @@ format_dictionary() {
 		# Replace remaining multispace per line with ,
 		sed -r 's/ {2,}/, /g' >> "${dictcache["ko"]}"
 		# Remove pdf
-		rm "${dictcache["ko"]}.pdf"
+		rm "${dictcache["ko"]}_pre"
 		format_hat_system "${dictcache["ko"]}"
 	fi
 }
@@ -482,6 +465,7 @@ main() {
 		build_dictionaries
 	fi
 
+	# Check for missing dictionarys
 	check_dictionary
 
 	# If no dictionary has been selected
