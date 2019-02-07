@@ -145,7 +145,7 @@ build_dictionaries() {
 	IFS=","
 	for dict in $build_dicts; do
 		build_dictionary "$dict"
-		inst_list+=("$dict")
+		inst_list+=("${dictnames["$dict"]}")
 	done
 
 	# Write list of installed dictionaries
