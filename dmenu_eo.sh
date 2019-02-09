@@ -157,22 +157,12 @@ build_dictionaries() {
 }
 
 build_dictionary() {
-	if [[ $1 == "es" ]]; then
-		download_dictionary "es"
+	if [[ $1 == "es" ]] || 
+	   [[ $1 == "oc" ]] || 
+	   [[ $1 == "ko" ]]; then
+		download_dictionary "$1"
+		format_dictionary "$1"
 	fi
-
-	if [[ $1 == "oc" ]]; then
-		download_dictionary "oc"
-	fi
-
-	if [[ $1 == "ko" ]]; then
-		download_dictionary "ko"
-	fi
-
-	# if [[ $1 == "vi" ]]; then
-		# Placeholder for dictionary specific build system
-	# fi
-	format_dictionary "$1"
 }
 
 download_dictionary() {
