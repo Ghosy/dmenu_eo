@@ -38,12 +38,17 @@ mkdir -p "$cachedir"
 
 installed_cache=$cachedir/installed
 
-declare -A dictnames dictcache sources
+declare -A dictnames dictabbrev dictcache sources
 # Dictionary names
 dictnames["es"]="ESPDIC"
 dictnames["oc"]="O'Connor And Hayes"
 dictnames["ko"]="Komputeko"
 dictnames["vi"]="Vikipedio"
+
+dictabbrev["ESPDIC"]="es"
+dictabbrev["O'CONNOR AND HAYES"]="oc"
+dictabbrev["KOMPUTEKO"]="ko"
+dictabbrev["VIKIPEDIO"]="vi"
 
 dictcache["es"]="$cachedir/espdic"
 dictcache["oc"]="$cachedir/oconnor_hayes"
@@ -150,10 +155,6 @@ build_dictionaries() {
 
 	# Write list of installed dictionaries
 	printf "%s\\n" "${inst_list[@]}" > "$installed_cache"
-
-	# print_std "Formatting dictionaries.." "Preparas vortarojn..."
-	# format_dictionaries
-	# print_std "  Done" "  Finita"
 }
 
 build_dictionary() {
@@ -178,14 +179,13 @@ download_dictionary() {
 }
 
 format_dictionary() {
+	print_std "Formatting ${dictnames["$1"]}..." "Preparas ${dictnames["$1"]}..."
+
 	if [[ $1 == "es" ]]; then
 		# Convert DOS newline to Unix
 		sed 's/.$//' "${dictcache["es"]}_pre" |
 		# Remove header
 		sed '/ESPDIC/d' >> "${dictcache["es"]}"
-		# Remove temp file
-		rm "${dictcache["es"]}_pre"
-		format_hat_system "${dictcache["es"]}"
 	fi
 
 	if [[ $1 == "oc" ]]; then
@@ -198,9 +198,6 @@ format_dictionary() {
 		sed '/^\s*$/d' |
 		# Remove extra .'s
 		sed -r 's/(\.|\. \[.+)$//g' >> "${dictcache["oc"]}"
-		# Remove temp file
-		rm "${dictcache["oc"]}_pre"
-		format_hat_system "${dictcache["oc"]}"
 	fi
 
 	if [[ $1 == "ko" ]]; then
@@ -216,10 +213,12 @@ format_dictionary() {
 		sed -r 's/ {2,}/: /' |
 		# Replace remaining multispace per line with ,
 		sed -r 's/ {2,}/, /g' >> "${dictcache["ko"]}"
-		# Remove pdf
-		rm "${dictcache["ko"]}_pre"
-		format_hat_system "${dictcache["ko"]}"
 	fi
+
+	rm "${dictcache["$1"]}_pre"
+	format_hat_system "${dictcache["$1"]}"
+
+	print_std "  Done" "  Finita"
 }
 
 format_hat_system() {
@@ -250,24 +249,25 @@ rebuild_dictionary() {
 }
 
 check_dictionary() {
-	while read -r dict; do
+	while read -r entry; do
+		dict=${dictabbrev["${entry^^}"]}
 		case ${dict^^} in
-			ES|ESPDIC)
+			ES)
 				if [[ ! -f ${dictcache["es"]} || ! -s ${dictcache["es"]} ]]; then
 					build_dictionary "es"
 				fi
 				;;
-			OC|O\'CONNOR\ AND\ HAYES)
+			OC)
 				if [[ ! -f ${dictcache["oc"]} || ! -s ${dictcache["oc"]} ]]; then
 					build_dictionary "oc"
 				fi
 				;;
-			KO|KOMPUTEKO)
+			KO)
 				if [[ ! -f ${dictcache["ko"]} || ! -s ${dictcache["ko"]} ]]; then
 					build_dictionary "ko"
 				fi
 				;;
-			VI|VIKIPEDIO)
+			VI)
 				;;
 			"")
 				;;
