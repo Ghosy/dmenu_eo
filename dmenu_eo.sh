@@ -248,35 +248,21 @@ rebuild_dictionary() {
 	exit 0
 }
 
-check_dictionary() {
+check_dictionaries() {
 	while read -r entry; do
 		dict=${dictabbrev["${entry^^}"]}
-		case ${dict^^} in
-			ES)
-				if [[ ! -f ${dictcache["es"]} || ! -s ${dictcache["es"]} ]]; then
-					build_dictionary "es"
-				fi
-				;;
-			OC)
-				if [[ ! -f ${dictcache["oc"]} || ! -s ${dictcache["oc"]} ]]; then
-					build_dictionary "oc"
-				fi
-				;;
-			KO)
-				if [[ ! -f ${dictcache["ko"]} || ! -s ${dictcache["ko"]} ]]; then
-					build_dictionary "ko"
-				fi
-				;;
-			VI)
-				;;
-			"")
-				;;
-			*)
-				print_err "$dict is not a valid option for a dictionary." "$dict ne estas valida elekto por vortaro."
-				exit 1;
-				;;
-		esac
+		if [[ $dict == "es" ]] || 
+		   [[ $dict == "oc" ]] || 
+		   [[ $dict == "ko" ]]; then
+			check_dictionary "$dict"
+		fi
 	done < "$installed_cache"
+}
+
+check_dictionary() {
+	if [[ ! -f ${dictcache["$1"]} || ! -s ${dictcache["$1"]} ]]; then
+		build_dictionary "$1"
+	fi
 }
 
 check_depends() {
@@ -455,8 +441,8 @@ main() {
 		build_dictionaries
 	fi
 
-	# Check for missing dictionarys
-	check_dictionary
+	# Check for missing dictionaries
+	check_dictionaries
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
