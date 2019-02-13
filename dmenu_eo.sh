@@ -261,6 +261,7 @@ check_dictionaries() {
 
 check_dictionary() {
 	if [[ ! -f ${dictcache["$1"]} || ! -s ${dictcache["$1"]} ]]; then
+		print_std "Building missing dictionary" "Konstruas mankan vortaron"
 		build_dictionary "$1"
 	fi
 }
