@@ -244,7 +244,7 @@ rebuild_dictionary() {
 		rm -f "$dict"
 	done
 	# Build dictionary
-	build_dictionaies
+	build_dictionaries
 	exit 0
 }
 
