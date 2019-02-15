@@ -144,6 +144,14 @@ print_err() {
 	fi
 }
 
+is_valid_dict() {
+	# returns 0 if dictionary is available in dictnames
+	if [[ -v dictnames["$1"] ]]; then
+		return 0;
+	fi
+	return 1;
+}
+
 build_dictionaries() {
 	inst_list=()
 
@@ -444,6 +452,10 @@ main() {
 
 	# Check for missing dictionaries
 	check_dictionaries
+
+	if is_valid_dict "es"; then
+		echo "aoeu"
+	fi
 
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
