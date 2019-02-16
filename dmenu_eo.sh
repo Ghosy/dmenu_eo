@@ -453,10 +453,6 @@ main() {
 	# Check for missing dictionaries
 	check_dictionaries
 
-	if is_valid_dict "es"; then
-		echo "aoeu"
-	fi
-
 	# If no dictionary has been selected
 	if [ -z "$choice" ]; then
 		get_choice "$(head -1 "$installed_cache")"
