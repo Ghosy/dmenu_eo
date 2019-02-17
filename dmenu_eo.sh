@@ -144,12 +144,17 @@ print_err() {
 	fi
 }
 
-is_valid_dict() {
+check_valid() {
 	# returns 0 if dictionary is available in dictnames
 	if [[ -v dictnames["$1"] ]]; then
 		return 0;
+	# Written in non-standard way because standard version always returns failure
+	elif [[ ${dictabbrev["${1^^}"]+0} ]]; then
+		return 0;
+	else
+		print_err "$1 is not a valid dictionary" "$1 ne estas valida vortaro"
+		return 1;
 	fi
-	return 1;
 }
 
 build_dictionaries() {
@@ -166,6 +171,8 @@ build_dictionaries() {
 }
 
 build_dictionary() {
+	check_valid "$1"
+
 	if [[ $1 == "es" ]] || 
 	   [[ $1 == "oc" ]] || 
 	   [[ $1 == "ko" ]]; then
@@ -258,6 +265,7 @@ rebuild_dictionary() {
 
 check_dictionaries() {
 	while read -r entry; do
+		check_valid "$entry" || return
 		dict=${dictabbrev["${entry^^}"]}
 		if [[ $dict == "es" ]] || 
 		   [[ $dict == "oc" ]] || 
@@ -324,6 +332,8 @@ get_choice() {
 		print_err "A dictionary option has already been chosen. Only use one flag of -m or -d." "Elekto de vortaro jam elektis. Nur uzu unu flagon de -m aŭ -d."
 		exit 1
 	fi
+
+	check_valid "$1"
 
 	case ${1^^} in
 		ES|ESPDIC)
