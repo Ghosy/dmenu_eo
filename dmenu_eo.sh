@@ -283,28 +283,22 @@ check_dictionary() {
 }
 
 check_depends() {
-	# Check for wget
-	if ! type wget >> /dev/null; then
-		print_err "Wget is not installed. Please install wget." "Wget ne estas instalita. Bonvolu instali wget."
-		exit 1
-	fi
+	check_depend "wget"
 
-	# Check for dmenu or rofi
-	if type dmenu >> /dev/null; then
-		dmenu="dmenu"
-	elif type rofi >> /dev/null; then
-		dmenu="rofi -dmenu"
-	else
-		print_err "Dmenu is not installed. Please install dmenu." "Dmenu ne estas instalita. Bonvolu instali dmenu."
+	check_depend "dmenu"
+
+	dmenu="dmenu"
+}
+
+check_depend() {
+	if ! type "$1" &> /dev/null; then
+		print_err "${1^} is not installed. Please install $1." "${1^} ne estas instalita. Bonvolu instali $1."
 		exit 1
 	fi
 }
 
 search_vikipedio() {
-	if ! type jq >>/dev/null; then
-		print_err "Jq is not installed. Please install jq to use Vikipedio." "Jq ne estas instalita. Bonvolu instali jq por uzi Vikipedion."
-		exit 1
-	fi
+	check_depend "jq"
 
 	cmd="$dmenu -p \"Vikipedio:\" < /dev/null"
 	input=$(eval "$cmd")
@@ -412,10 +406,7 @@ main() {
 				rebuild=true
 				;;
 			--rofi)
-				if ! type rofi >> /dev/null; then
-					print_err "Rofi is not installed. Please install rofi to use --rofi." "Rofi ne estas instalita. Bonvolu instali rofi por uzi --rofi."
-					exit 1
-				fi
+				check_depend "rofi"
 				dmenu="rofi -dmenu"
 				;;
 			--silent|--silenta)
