@@ -24,7 +24,7 @@ menu=false
 rebuild=false
 quiet=false
 silent=false
-dmenu=""
+dmenu="dmenu"
 # Get default system languae as default locale setting
 locale=$(locale | grep "LANG" | cut -d= -f2 | cut -d_ -f1)
 build_dicts="es,oc,ko,vi"
@@ -286,8 +286,6 @@ check_depends() {
 	check_depend "wget"
 
 	check_depend "dmenu"
-
-	dmenu="dmenu"
 }
 
 check_depend() {
