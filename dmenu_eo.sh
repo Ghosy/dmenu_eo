@@ -300,6 +300,11 @@ search_vikipedio() {
 
 	cmd="$dmenu -p \"Vikipedio:\" < /dev/null"
 	input=$(eval "$cmd")
+
+	if [ -z "$input" ]; then
+		exit 0
+	fi
+
 	declare -A results
 	IFS=$'\n'
 
