@@ -300,7 +300,6 @@ search_vikipedio() {
 
 	cmd="$dmenu -p \"Vikipedio:\" < /dev/null"
 	input=$(eval "$cmd")
-
 	if [ -z "$input" ]; then
 		exit 0
 	fi
@@ -321,7 +320,12 @@ search_vikipedio() {
 
 	# Select link to open
 	cmd="$dmenu -l 10 <<< \"${keys[*]}\""
-	xdg-open "${results[$(eval "$cmd")]}"
+	input=$(eval "$cmd")
+	if [ -z "$input" ]; then
+		exit 0
+	fi
+
+	xdg-open "${results[$input]}"
 }
 
 get_choice() {
