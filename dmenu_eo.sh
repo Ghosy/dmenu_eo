@@ -314,6 +314,17 @@ search_vikipedio() {
 	mapfile -t keys < <(jq -r '.[1]|join("\n")' <<< "$search")
 	mapfile -t vals < <(jq -r '.[3]|join("\n")' <<< "$search")
 
+	# If no results found
+	if [ -v keys ]; then
+		if [[ "$locale" == "eo" ]]; then
+			msg="Ne difinoj trovita"
+		else
+			msg="No definitions found"
+		fi
+		$dmenu <<< "$msg" >> /dev/null
+		exit 0
+	fi
+
 	for ((i=0; i < ${#keys[*]}; i++)); do
 		results["${keys[i]}"]=${vals[i]}
 	done
