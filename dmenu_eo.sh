@@ -325,6 +325,7 @@ search_vikipedio() {
 		exit 0
 	fi
 
+	# Combine keys with values for simple map of results
 	for ((i=0; i < ${#keys[*]}; i++)); do
 		results["${keys[i]}"]=${vals[i]}
 	done
@@ -336,6 +337,7 @@ search_vikipedio() {
 		exit 0
 	fi
 
+	# Open selected link
 	xdg-open "${results[$input]}"
 }
 
