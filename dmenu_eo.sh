@@ -317,9 +317,9 @@ search_vikipedio() {
 	# If no results found
 	if [ -v keys ]; then
 		if [[ "$locale" == "eo" ]]; then
-			msg="Ne difinoj trovita"
+			msg="Ne trovitaj rezultoj"
 		else
-			msg="No definitions found"
+			msg="No results found"
 		fi
 		$dmenu <<< "$msg" >> /dev/null
 		exit 0
